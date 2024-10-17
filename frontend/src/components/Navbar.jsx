@@ -17,7 +17,7 @@ const Navbar = () => {
     >
       <Toolbar>
         <IconButton size="large" edge="start" aria-label="logo">
-          <LaptopMacIcon />
+          <LaptopMacIcon sx={{fontSize: 40}}/>
         </IconButton>
         <Typography
           variant="h6"
