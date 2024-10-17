@@ -4,7 +4,11 @@ import './index.css';
 import App from './App';
 import { createTheme, ThemeProvider } from '@mui/material';
 
-const theme = createTheme()
+const theme = createTheme({
+  typography:{
+    fontFamily: 'Roboto, sans-serif',
+  }
+})
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(

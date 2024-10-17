@@ -5,14 +5,14 @@ import { Box, Grid2, Typography, Button } from '@mui/material'
 const HeroSection = () => {
   return (
     <Box sx={{flexGrow:1, padding:4}}>
-        <Grid2 container spacing={15} alignItems="center">
+        <Grid2 container spacing={8} alignItems="center">
             <Grid2 item xs={12} md={6}>
                 <Grid2 item xs={12} md={6}>
-                    <Typography variant='h4' component='h4' gutterBottom>
+                    <Typography variant='h4' component='h4' gutterBottom sx={{fontWeight: 'bold', fontSize:'35px', py:2}}>
                     Collaboration Made Simple<br/> for Your Projects
                     </Typography>
-                    <Typography variant='body1' gutterBottom>
-                    Collaborate with friends in real-time to write, compile, and <br/>run code together effortlessly.
+                    <Typography variant='h5' gutterBottom sx={{py:2}}>
+                    Collaborate with friends in real-time to write,<br/>compile, and run code together effortlessly.
                     </Typography>
                     <Button
             sx={{
