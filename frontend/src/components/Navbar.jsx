@@ -22,9 +22,9 @@ const Navbar = () => {
         <Typography
           variant="h6"
           component="div"
-          sx={{ flexGrow: 1, color: "black" }}
+          sx={{ flexGrow: 1, color: "black", fontWeight:"bold" }}
         >
-          Collaborative CodeEditor
+          CODEBOX
         </Typography>
         <Stack direction="row" spacing={2}>
           <Button

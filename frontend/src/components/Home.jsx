@@ -5,7 +5,7 @@ import HeroSection from './HeroSection.jsx'
 
 const Home = () => {
   return (
-   <Container sx={{ height: "100vh"}}>
+    <Container sx={{ width: '100vw', height: '100vh', overflowX: 'hidden' }}>
       <Navbar />
       <HeroSection />
     </Container>
