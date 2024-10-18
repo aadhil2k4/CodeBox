@@ -38,7 +38,7 @@ const Navbar = () => {
               "&:hover": { bgcolor: "grey" },
             }}
           >
-            Compiler
+            Home
           </Button>
           <Button
             sx={{
