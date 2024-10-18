@@ -6,11 +6,13 @@ import {
   Typography,
   Stack,
   Button,
+  Container,
 } from "@mui/material";
 import LaptopMacIcon from "@mui/icons-material/LaptopMac";
 
 const Navbar = () => {
   return (
+    <Container>
     <AppBar
       position="static"
       sx={{ bgcolor: "transparent", boxShadow: "none", paddingY: 2 }}
@@ -52,6 +54,7 @@ const Navbar = () => {
         </Stack>
       </Toolbar>
     </AppBar>
+    </Container>
   );
 };
 

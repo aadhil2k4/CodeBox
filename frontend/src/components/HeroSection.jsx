@@ -1,11 +1,13 @@
 import React from 'react'
 import HeroImage from '../images/HeroImage.svg'
 import Wave from '../images/Wave.svg'
-import { Box, Grid2, Typography, Button } from '@mui/material'
+import { Box, Grid2, Typography, Button, Container } from '@mui/material'
 
 const HeroSection = () => {
   return (
-    <Box sx={{flexGrow:1, padding:4, background: `url(${Wave})`, backgroundSize: 'cover', backgroundPosition:'center'}}>
+    <Box sx={{flexGrow:1, padding:4, background: `url(${Wave})`, backgroundSize: 'cover', backgroundPosition:'center'
+    ,width:'100vw', height:'auto', zIndex:1}}>
+      <Container sx={{my:2}}>
         <Grid2 container spacing={8} alignItems="center">
             <Grid2 item xs={12} md={6}>
                 <Grid2 item xs={12} md={6}>
@@ -30,6 +32,7 @@ const HeroSection = () => {
             <img src={HeroImage} alt="Hero" style={{ width: "550px", height: "auto", backgroundColor:"transparent" }} />
             </Grid2>
         </Grid2>
+        </Container>
     </Box>
   )
 }
