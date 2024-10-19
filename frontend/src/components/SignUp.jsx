@@ -1,4 +1,4 @@
-import { Container, Paper, Avatar, Typography, Box, TextField, FormControlLabel, Button, Grid2, Link } from '@mui/material'
+import { Container, Paper, Avatar, Typography, Box, TextField, Button, Grid2, Link } from '@mui/material'
 import Navbar from './Navbar'
 import React from 'react'
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined'
@@ -24,26 +24,20 @@ const Login = () => {
                 <LockOutlinedIcon />
             </Avatar>
             <Typography component='h1' variant='h5' sx={{textAlign:'center'}}>
-                Sign In
+                Sign Up
             </Typography>
             <Box component='form' onSubmit={handleSubmit} noValidate sx={{mt:1}}>
                 <TextField placeholder='Enter Username' fullWidth required autoFocus sx={{mb:2}}></TextField>
+                <TextField placeholder='Enter Email Id' fullWidth required autoFocus sx={{mb:2}}></TextField>
                 <TextField placeholder='Enter Password' fullWidth required sx={{mb:2}} type='password'></TextField>
-                <FormControlLabel control={<input type='checkbox' />} label='Remember Me'></FormControlLabel>
                 <Button type='submit' variant='contained' fullWidth sx={{mt:1}}>
-                    Sign In
+                    Sign Up
                 </Button>
             </Box>
             <Grid2 container justifyContent={'space-between'} sx={{mt:1}}>
                 <Grid2 item>
-                    <Link component={RouterLink} to='/forgot'>
-                        Forgot Password?
-                    </Link>
-
-                </Grid2>
-                <Grid2 item>
-                    <Link component={RouterLink} to='/signup'>
-                        SignUp
+                    <Link component={RouterLink} to='/Login'>
+                        Login
                     </Link>
 
                 </Grid2>
