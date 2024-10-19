@@ -8,7 +8,8 @@ import {
   Button,
   Container,
 } from "@mui/material";
-import LaptopMacIcon from "@mui/icons-material/LaptopMac";
+//import LaptopMacIcon from "@mui/icons-material/LaptopMac";
+import Logo from "../images/Logo.svg"
 
 const Navbar = () => {
   return (
@@ -19,7 +20,7 @@ const Navbar = () => {
     >
       <Toolbar>
         <IconButton size="large" edge="start" aria-label="logo">
-          <LaptopMacIcon sx={{fontSize: 40}}/>
+          <img src={Logo} alt="logo" style={{width:"60px", height:"auto"}}/>
         </IconButton>
         <Typography
           variant="h6"
