@@ -27,7 +27,7 @@ const Login = () => {
                 Sign In
             </Typography>
             <Box component='form' onSubmit={handleSubmit} noValidate sx={{mt:1}}>
-                <TextField placeholder='Enter Username' fullWidth required autoFocus sx={{mb:2}}></TextField>
+                <TextField placeholder='Enter Email Id' fullWidth required autoFocus sx={{mb:2}}></TextField>
                 <TextField placeholder='Enter Password' fullWidth required sx={{mb:2}} type='password'></TextField>
                 <FormControlLabel control={<input type='checkbox' />} label='Remember Me'></FormControlLabel>
                 <Button type='submit' variant='contained' fullWidth sx={{mt:1}}>
