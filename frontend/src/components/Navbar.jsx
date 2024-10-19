@@ -8,8 +8,8 @@ import {
   Button,
   Container,
 } from "@mui/material";
-//import LaptopMacIcon from "@mui/icons-material/LaptopMac";
 import Logo from "../images/Logo.svg"
+import { Link as RouterLink } from 'react-router-dom'
 
 const Navbar = () => {
   return (
@@ -19,7 +19,7 @@ const Navbar = () => {
       sx={{ bgcolor: "transparent", boxShadow: "none", paddingY: 2 }}
     >
       <Toolbar>
-        <IconButton size="large" edge="start" aria-label="logo">
+        <IconButton size="large" edge="start" aria-label="logo" component={RouterLink} to="/">
           <img src={Logo} alt="logo" style={{width:"60px", height:"auto"}}/>
         </IconButton>
         <Typography
@@ -31,6 +31,8 @@ const Navbar = () => {
         </Typography>
         <Stack direction="row" spacing={2}>
           <Button
+            component={RouterLink} 
+            to="/"
             sx={{
               color: "white",
               bgcolor: "black",
@@ -42,6 +44,8 @@ const Navbar = () => {
             Home
           </Button>
           <Button
+            component={RouterLink} 
+            to="/login"
             sx={{
               color: "white",
               bgcolor: "black",

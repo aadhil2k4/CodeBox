@@ -2,6 +2,7 @@ import React from 'react'
 import HeroImage from '../images/HeroImage.svg'
 import Wave from '../images/Wave.svg'
 import { Box, Grid2, Typography, Button, Container } from '@mui/material'
+import { Link as RouterLink } from 'react-router-dom'
 
 const HeroSection = () => {
   return (
@@ -18,6 +19,8 @@ const HeroSection = () => {
                     Collaborate with friends in real-time to write,<br/>compile, and run code together effortlessly.
                     </Typography>
                     <Button
+            component={RouterLink}
+            to="/signup"
             sx={{
               color: "white",
               bgcolor: "black",
