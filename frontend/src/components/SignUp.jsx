@@ -1,7 +1,7 @@
 import { Container, Paper, Avatar, Typography, Box, TextField, Button, Grid2, Link } from '@mui/material'
 import Navbar from './Navbar'
 import React from 'react'
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined'
+import UploadIcon from '@mui/icons-material/Upload';
 import { Link as RouterLink } from "react-router-dom"
 
 const Login = () => {
@@ -21,7 +21,7 @@ const Login = () => {
                 textAlign:'center',
                 mb:1
             }}>
-                <LockOutlinedIcon />
+                <UploadIcon />
             </Avatar>
             <Typography component='h1' variant='h5' sx={{textAlign:'center'}}>
                 Sign Up
