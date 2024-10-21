@@ -2,10 +2,10 @@ import { Container, Paper, Avatar, Typography, Box, TextField, Button, Grid2, Li
 import Navbar from './Navbar'
 import React from 'react'
 import UploadIcon from '@mui/icons-material/Upload';
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { ToastContainer } from 'react-toastify'
 import { useState } from 'react';
-import { handleError } from '../utils';
+import { handleError, handleSuccess } from '../utils';
 
 const SignUp = () => {
 
@@ -14,6 +14,8 @@ const SignUp = () => {
         email: '',
         password: ''
     })
+
+    const navigate = useNavigate();
 
     const handleChange = (e) => {
         const {name, value} = e.target
@@ -31,7 +33,7 @@ const SignUp = () => {
         }
         try{
             const url = 'http://localhost:8080/auth/signup'
-            const response = fetch(url, {
+            const response = await fetch(url, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -39,7 +41,19 @@ const SignUp = () => {
                 body: JSON.stringify(signupInfo)
             });
             const result = await response.json();
-            console.log(result)
+            const {success, message, error} = result;
+            if(success){
+                handleSuccess(message);
+                setTimeout(() => {
+                    navigate('/login')
+                }, 1000)
+            }else if(error){
+                const details = error.details[0].message;
+                handleError(details);
+            }
+            else if(!success){
+                handleError(message || 'Signup failed')
+            }
         }catch(err){
             handleError(err);
         }
