@@ -4,6 +4,8 @@ import './index.css';
 import App from './App';
 import { createTheme, ThemeProvider } from '@mui/material';
 import { BrowserRouter } from 'react-router-dom';
+import 'react-toastify/ReactToastify.css'
+
 
 const theme = createTheme({
   typography:{

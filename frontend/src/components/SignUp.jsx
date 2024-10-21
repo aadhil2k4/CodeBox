@@ -2,12 +2,47 @@ import { Container, Paper, Avatar, Typography, Box, TextField, Button, Grid2, Li
 import Navbar from './Navbar'
 import React from 'react'
 import UploadIcon from '@mui/icons-material/Upload';
-import { Link as RouterLink } from "react-router-dom"
+import { Link as RouterLink } from "react-router-dom";
+import { ToastContainer } from 'react-toastify'
+import { useState } from 'react';
+import { handleError } from '../utils';
 
-const Login = () => {
+const SignUp = () => {
 
-    const handleSubmit = () =>{
-        console.log('Login')
+    const [signupInfo, setSignupInfo] = useState({
+        name: '',
+        email: '',
+        password: ''
+    })
+
+    const handleChange = (e) => {
+        const {name, value} = e.target
+        console.log(name, value)
+        const copyInfo = {...signupInfo}
+        copyInfo[name] = value
+        setSignupInfo(copyInfo)
+    }
+
+    const handleSubmit = async (e) =>{
+        e.preventDefault()
+        const {name, email, password} = signupInfo
+        if(!name || !email || !password){
+            return handleError('All fields are required')
+        }
+        try{
+            const url = 'http://localhost:8080/auth/signup'
+            const response = fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(signupInfo)
+            });
+            const result = await response.json();
+            console.log(result)
+        }catch(err){
+            handleError(err);
+        }
     }
 
   return (
@@ -27,9 +62,9 @@ const Login = () => {
                 Sign Up
             </Typography>
             <Box component='form' onSubmit={handleSubmit} noValidate sx={{mt:1}}>
-                <TextField placeholder='Enter Username' fullWidth required autoFocus sx={{mb:2}}></TextField>
-                <TextField placeholder='Enter Email Id' fullWidth required sx={{mb:2}}></TextField>
-                <TextField placeholder='Enter Password' fullWidth required sx={{mb:2}} type='password'></TextField>
+                <TextField name="name" placeholder='Enter Username' fullWidth required autoFocus sx={{mb:2}} onChange={handleChange} value={signupInfo.name}></TextField>
+                <TextField name="email" placeholder='Enter Email Id' fullWidth required sx={{mb:2}} onChange={handleChange} value={signupInfo.email}></TextField>
+                <TextField name="password" placeholder='Enter Password' fullWidth required sx={{mb:2}} type='password' onChange={handleChange} value={signupInfo.password}></TextField>
                 <Button type='submit' variant='contained' fullWidth sx={{mt:1}}>
                     Sign Up
                 </Button>
@@ -43,9 +78,10 @@ const Login = () => {
                 </Grid2>
             </Grid2>
         </Paper>
+        <ToastContainer />
     </Container>
     </>
   )
 }
 
-export default Login
+export default SignUp
