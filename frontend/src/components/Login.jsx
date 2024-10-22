@@ -2,13 +2,66 @@ import { Container, Paper, Avatar, Typography, Box, TextField, FormControlLabel,
 import Navbar from './Navbar'
 import React from 'react'
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined'
-import { Link as RouterLink } from "react-router-dom"
+import { Link as RouterLink, useNavigate } from "react-router-dom"
+import { useState } from 'react'
+import { handleError, handleSuccess } from '../utils';
+import { ToastContainer } from 'react-toastify'
+
+
 
 const Login = () => {
 
-    const handleSubmit = () =>{
-        console.log('Login')
+    const [loginInfo, setLoginInfo] = useState({
+        email: '',
+        password: ''
+    })
+
+    const navigate = useNavigate();
+
+    const handleChange = (e) => {
+        const {name, value} = e.target
+        console.log(name, value)
+        const copyInfo = {...loginInfo}
+        copyInfo[name] = value
+        setLoginInfo(copyInfo)
     }
+
+    const handleLogin = async (e) =>{
+        e.preventDefault()
+        const {email, password} = loginInfo
+        if(!email || !password){
+            return handleError('All fields are required')
+        }
+        try{
+            const url = 'http://localhost:8080/auth/login'
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(loginInfo)
+            });
+            const result = await response.json();
+            const {success, message, error, jwtToken, name} = result;
+            if(success){
+                handleSuccess(message);
+                localStorage.setItem('token', jwtToken);
+                localStorage.setItem('loggedInUser', name);
+                setTimeout(() => {
+                    navigate('/user')
+                }, 1000)
+            }else if(error){
+                const details = error.details[0].message;
+                handleError(details);
+            }
+            else if(!success){
+                handleError(message || 'Signup failed')
+            }
+        }catch(err){
+            handleError(err);
+        }
+    }
+
 
   return (
     <>
@@ -26,9 +79,9 @@ const Login = () => {
             <Typography component='h1' variant='h5' sx={{textAlign:'center'}}>
                 Sign In
             </Typography>
-            <Box component='form' onSubmit={handleSubmit} noValidate sx={{mt:1}}>
-                <TextField placeholder='Enter Email Id' fullWidth required autoFocus sx={{mb:2}}></TextField>
-                <TextField placeholder='Enter Password' fullWidth required sx={{mb:2}} type='password'></TextField>
+            <Box component='form' onSubmit={handleLogin} noValidate sx={{mt:1}}>
+                <TextField name='email' placeholder='Enter Email Id' fullWidth required autoFocus sx={{mb:2}} onChange={handleChange} value={loginInfo.email}></TextField>
+                <TextField name='password' placeholder='Enter Password' fullWidth required sx={{mb:2}} type='password' onChange={handleChange} value={loginInfo.password}></TextField>
                 <FormControlLabel control={<input type='checkbox' />} label='Remember Me'></FormControlLabel>
                 <Button type='submit' variant='contained' fullWidth sx={{mt:1}}>
                     Sign In
@@ -49,6 +102,7 @@ const Login = () => {
                 </Grid2>
             </Grid2>
         </Paper>
+        <ToastContainer />
     </Container>
     </>
   )
