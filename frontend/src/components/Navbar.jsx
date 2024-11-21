@@ -8,19 +8,20 @@ import {
   Button,
   Container,
 } from "@mui/material";
-import Logo from "../images/Logo.svg"
+import Logo from "../images/Logo3.png"
 import { Link as RouterLink } from 'react-router-dom'
+import LoginIcon from '@mui/icons-material/Login';
 
 const Navbar = () => {
   return (
-    <Container>
     <AppBar
       position="static"
-      sx={{ bgcolor: "transparent", boxShadow: "none", paddingY: 2 }}
+      sx={{ bgcolor: "#3DED97"}}
     >
+      <Container sx={{my:1}}>
       <Toolbar>
         <IconButton size="large" edge="start" aria-label="logo" component={RouterLink} to="/">
-          <img src={Logo} alt="logo" style={{width:"60px", height:"auto"}}/>
+          <img src={Logo} alt="logo" style={{width:"40px", height:"auto"}}/>
         </IconButton>
         <Typography
           variant="h6"
@@ -34,10 +35,9 @@ const Navbar = () => {
             component={RouterLink} 
             to="/"
             sx={{
-              color: "white",
-              bgcolor: "black",
-              borderRadius: "20px",
+              color: "black",
               padding: "6px 16px",
+              fontWeight: "bold",
               "&:hover": { bgcolor: "grey" },
             }}
           >
@@ -47,19 +47,18 @@ const Navbar = () => {
             component={RouterLink} 
             to="/login"
             sx={{
-              color: "white",
-              bgcolor: "black",
-              borderRadius: "20px",
-              padding: "6px 16px",
+              color: "black",
+              fontWeight: "bold",
               "&:hover": { bgcolor: "grey" },
             }}
           >
             Login
+            <LoginIcon />
           </Button>
         </Stack>
       </Toolbar>
+      </Container>
     </AppBar>
-    </Container>
   );
 };
 
