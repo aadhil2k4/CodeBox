@@ -64,12 +64,12 @@ const SignUp = () => {
     <Box >
         <Navbar />
     <Container maxWidth="">
-        <Grid2 container spacing={14} alignItems="center" marginTop={6}>
+        <Grid2 container spacing={20} alignItems="center" marginTop={6}>
         <Grid2 item xs={12} md={6}>
-        <img src={SignUpImage} alt="Login" style={{ width: "550px", height: "auto", backgroundColor:"transparent"}}/>
+        <img src={SignUpImage} alt="Login" style={{paddingLeft:"50px", width: "550px", height: "auto", backgroundColor:"transparent"}}/>
         </Grid2>
         <Grid2 item xs={12} md={6}>
-        <Paper elevation={10} sx={{ padding:2}}>
+        <Paper elevation={10} sx={{maxWidth: 400, padding:2}}>
             <Avatar sx={{
                 mx:'auto',
                 bgcolor:'secondary.main',
