@@ -5,6 +5,8 @@ import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { ToastContainer } from 'react-toastify'
 import { useState } from 'react';
 import { handleError, handleSuccess } from '../utils';
+import Navbar from './Navbar';
+import SignUpImage from '../images/rb_2745.png'
 
 const SignUp = () => {
 
@@ -60,8 +62,14 @@ const SignUp = () => {
 
   return (
     <Box >
-    <Container maxWidth="xs">
-        <Paper elevation={10} sx={{marginTop:8, padding:2}}>
+        <Navbar />
+    <Container maxWidth="">
+        <Grid2 container spacing={14} alignItems="center" marginTop={6}>
+        <Grid2 item xs={12} md={6}>
+        <img src={SignUpImage} alt="Login" style={{ width: "550px", height: "auto", backgroundColor:"transparent"}}/>
+        </Grid2>
+        <Grid2 item xs={12} md={6}>
+        <Paper elevation={10} sx={{ padding:2}}>
             <Avatar sx={{
                 mx:'auto',
                 bgcolor:'secondary.main',
@@ -91,6 +99,8 @@ const SignUp = () => {
             </Grid2>
         </Paper>
         <ToastContainer />
+        </Grid2>
+        </Grid2>
     </Container>
     </Box>
   )
