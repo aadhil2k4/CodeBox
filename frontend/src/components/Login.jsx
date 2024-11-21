@@ -1,12 +1,12 @@
-import { Container, Paper, Avatar, Typography, Box, TextField, FormControlLabel, Button, Grid2, Link } from '@mui/material'
-import Navbar from './Navbar'
+import { Container, Paper, Avatar, Typography, Box, TextField,  Button, Grid2, Link } from '@mui/material'
 import React from 'react'
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined'
 import { Link as RouterLink, useNavigate } from "react-router-dom"
 import { useState } from 'react'
 import { handleError, handleSuccess } from '../utils';
 import { ToastContainer } from 'react-toastify'
-
+import LoginImage from "../images/rb_7893.png"
+import Navbar from './Navbar'
 
 
 const Login = () => {
@@ -66,8 +66,13 @@ const Login = () => {
   return (
     <>
     <Navbar />
-    <Container maxWidth="xs">
-        <Paper elevation={10} sx={{marginTop:8, padding:2}}>
+    <Container maxWidth="">
+    <Grid2 container spacing={20} alignItems="center" marginTop={4}>
+        <Grid2 item xs={12} md={6}>
+        <img src={LoginImage} alt="Login" style={{ width: "550px", height: "auto", backgroundColor:"transparent"}}/>
+        </Grid2>
+        <Grid2 item xs={12} md={6}>
+        <Paper elevation={10} maxWidth="xs" sx={{padding:2}}>
             <Avatar sx={{
                 mx:'auto',
                 bgcolor:'secondary.main',
@@ -82,7 +87,6 @@ const Login = () => {
             <Box component='form' onSubmit={handleLogin} noValidate sx={{mt:1}}>
                 <TextField name='email' placeholder='Enter Email Id' fullWidth required autoFocus sx={{mb:2}} onChange={handleChange} value={loginInfo.email}></TextField>
                 <TextField name='password' placeholder='Enter Password' fullWidth required sx={{mb:2}} type='password' onChange={handleChange} value={loginInfo.password}></TextField>
-                <FormControlLabel control={<input type='checkbox' />} label='Remember Me'></FormControlLabel>
                 <Button type='submit' variant='contained' fullWidth sx={{mt:1}}>
                     Sign In
                 </Button>
@@ -102,6 +106,8 @@ const Login = () => {
                 </Grid2>
             </Grid2>
         </Paper>
+        </Grid2>
+        </Grid2>
         <ToastContainer />
     </Container>
     </>

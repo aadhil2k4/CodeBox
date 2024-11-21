@@ -1,5 +1,4 @@
 import { Container, Paper, Avatar, Typography, Box, TextField, Button, Grid2, Link } from '@mui/material'
-import Navbar from './Navbar'
 import React from 'react'
 import UploadIcon from '@mui/icons-material/Upload';
 import { Link as RouterLink, useNavigate } from "react-router-dom";
@@ -60,8 +59,7 @@ const SignUp = () => {
     }
 
   return (
-    <>
-    <Navbar />
+    <Box >
     <Container maxWidth="xs">
         <Paper elevation={10} sx={{marginTop:8, padding:2}}>
             <Avatar sx={{
@@ -94,7 +92,7 @@ const SignUp = () => {
         </Paper>
         <ToastContainer />
     </Container>
-    </>
+    </Box>
   )
 }
 
