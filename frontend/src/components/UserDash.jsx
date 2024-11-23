@@ -3,6 +3,7 @@ import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { handleSuccess } from '../utils';
 import { ToastContainer } from 'react-toastify';
+import EditorPage from './EditorPage';
 
 const UserDash = () => {
 
@@ -23,14 +24,15 @@ const UserDash = () => {
   }
 
   return (
-    <div style={{textAlign: "center"}}>
+    <EditorPage />
+    /*<div style={{textAlign: "center"}}>
       <h1>Hi {loggedInUser} 👋🏻</h1>
       <button onClick={handleLogout}>Logout</button>
       <h2 style={{marginBottom:"10rem"}}>Your Sessions: </h2>
       <button style={{marginRight: "2rem"}}>Join New Session</button>
       <button>Create New Session</button>
       <ToastContainer />
-      </div>
+      </div>*/
   )
 }
 
