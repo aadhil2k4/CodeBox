@@ -18,14 +18,17 @@ const UserDash = () => {
     localStorage.removeItem('loggedInUser');
     handleSuccess('User Logged out')
     setTimeout(()=>{
-      navigate('/');
+      navigate('/login');
     },1000)
   }
 
   return (
-    <div>
-      <h1>{loggedInUser}</h1>
+    <div style={{textAlign: "center"}}>
+      <h1>Hi {loggedInUser} 👋🏻</h1>
       <button onClick={handleLogout}>Logout</button>
+      <h2 style={{marginBottom:"10rem"}}>Your Sessions: </h2>
+      <button style={{marginRight: "2rem"}}>Join New Session</button>
+      <button>Create New Session</button>
       <ToastContainer />
       </div>
   )

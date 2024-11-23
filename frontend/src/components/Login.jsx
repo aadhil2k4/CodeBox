@@ -72,7 +72,7 @@ const Login = () => {
         <img src={LoginImage} alt="Login" style={{ width: "550px", height: "auto", backgroundColor:"transparent"}}/>
         </Grid2>
         <Grid2 item xs={12} md={6}>
-        <Paper elevation={10} maxWidth="xs" sx={{padding:2}}>
+        <Paper elevation={10} maxWidth="xs" sx={{padding:2, borderRadius:8}}>
             <Avatar sx={{
                 mx:'auto',
                 bgcolor:'secondary.main',
