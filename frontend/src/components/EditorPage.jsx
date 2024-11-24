@@ -1,7 +1,7 @@
-import { Typography} from '@mui/material'
 import { makeStyles} from '@mui/styles'
 import React, { useState,createContext } from 'react'
 import SideBar from './SideBar'
+import Editor from './Editor'
 
 const useStyles = makeStyles({
     root:{
@@ -34,7 +34,7 @@ const EditorPage = () => {
             <SideBar />
             </clientContext.Provider>
             <main className={classes.content}>
-                <Typography variant='h6'>Editor</Typography>
+                <Editor />
             </main>
         </div>
     )
