@@ -1,6 +1,8 @@
-import React, { useState } from "react";
+import React, { useState,useContext } from "react";
 import { Drawer, Typography, Box, Button } from "@mui/material";
 import { makeStyles } from "@mui/styles";
+import Members from "./Members";
+import { clientContext } from "./EditorPage";
 
 const drawerWidth = 300;
 
@@ -14,6 +16,8 @@ const useStyles = makeStyles({
     backgroundColor: "black !important",
     color: "white",
     borderRight: "4px solid white",
+    display: "flex",
+    flexDirection: "column"
   },
   root: {
     display: "flex",
@@ -29,6 +33,7 @@ const useStyles = makeStyles({
     padding: "16px",
     textAlign: "center",
     color: "white",
+    flexGrow: 1
   },
   footer:{
     display: "flex",
@@ -41,13 +46,20 @@ const useStyles = makeStyles({
 
 const SideBar = () => {
   const classes = useStyles();
+  const clients = useContext(clientContext);
 
   const [activeLink, setActiveLink] = useState("Members");
 
   const renderContent = () => {
     switch (activeLink) {
       case "Members":
-        return <Typography>Members Section Content</Typography>;
+        return( 
+          <Box>
+          {clients.map((client)=>(
+          <Members key={client.socketId} username={client.username} />
+        ))}
+        </Box>
+        )
       case "Files":
         return <Typography>Files Section Content</Typography>;
       case "Chat":
