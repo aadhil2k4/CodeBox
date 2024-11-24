@@ -23,13 +23,20 @@ const useStyles = makeStyles({
     display: "flex",
     justifyContent: "center",
     gap: "8px",
-    margin: "16px 0",
+    margin: "4px 0",
   },
   contentContainer: {
     padding: "16px",
     textAlign: "center",
     color: "white",
   },
+  footer:{
+    display: "flex",
+    justifyContent: "space-around",
+    marginTop:"auto",
+    marginBottom: "15px",
+    padding: "0 8px"
+  }
 });
 
 const SideBar = () => {
@@ -67,10 +74,17 @@ const SideBar = () => {
             display: "inline-block",
             padding: "4px 8px",
             color: "white",
+            marginBottom:"1px solid white"
           }}
         >
           <Typography variant="h5">CodeBox</Typography>
         </Box>
+        <Box
+          sx={{
+            borderBottom: "1px solid white",
+            margin: "4px 0",
+          }}
+        ></Box>
         <Box className={classes.linksContainer}>
           {["Members", "Files", "Chat"].map((text) => (
             <Button
@@ -79,7 +93,7 @@ const SideBar = () => {
               sx={{
                 color: activeLink === text ? "#3DED97" : "white",
                 fontWeight: activeLink === text ? "bold" : "normal",
-                textDecoration: activeLink === text ? "underline" : "none",
+                textDecoration: activeLink === text ? "bold" : "none",
                 "&:hover": {
                   color: "#3DED97",
                 },
@@ -90,6 +104,10 @@ const SideBar = () => {
           ))}
         </Box>
         <Box className={classes.contentContainer}>{renderContent()}</Box>
+        <Box className={classes.footer}>
+            <Button variant="outline" sx={{color:"white", backgroundColor:"green"}}>Copy Id</Button>
+            <Button variant="outline" sx={{color:"white", backgroundColor:"red"}}>Leave Room</Button>
+        </Box>
       </Drawer>
     </div>
   );
