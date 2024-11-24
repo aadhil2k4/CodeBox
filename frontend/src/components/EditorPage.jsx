@@ -1,22 +1,19 @@
-import { Drawer, Typography, Box } from '@mui/material'
-import { makeStyles } from '@mui/styles'
+import { Typography} from '@mui/material'
+import { makeStyles} from '@mui/styles'
 import React from 'react'
+import SideBar from './SideBar'
 
-const drawerWidth = 240;
 const useStyles = makeStyles({
-    drawer: {
-        width: drawerWidth,
-        flexShrink: 0
-    },
-    drawerPaper: {
-        width: drawerWidth,
-        backgroundColor:"#001122 !important",
-        color: "white",
-        borderRight: "4px solid green"
-    },
-    root: {
+    root:{
         display: 'flex',
-        height: "100vh"
+        height: '100vh'
+    },
+    content:{
+        flexGrow: 1,
+        padding: "16px",
+        minHeight: "100vh",
+        backgroundColor: "#001122",
+        color: 'white'
     }
 })
 
@@ -24,20 +21,10 @@ const EditorPage = () => {
     const classes = useStyles();
     return (
         <div className={classes.root}>
-            {/* SIDEBAR */}
-            <Drawer
-                className={classes.drawer}
-                variant='permanent'
-                anchor="left"
-                classes={{paper: classes.drawerPaper}}
-            >
-                <Box sx={{margin: "16px auto", textAlign:"center", border: "2px solid", display:"inline-block",
-                        padding:"8px, 16px"}}>
-                    <Typography variant="h5">
-                        CodeBox
-                    </Typography>
-                </Box>
-            </Drawer>
+            <SideBar />
+            <main className={classes.content}>
+                <Typography variant='h6'>Hi</Typography>
+            </main>
         </div>
   )
 }

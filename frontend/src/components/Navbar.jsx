@@ -2,13 +2,12 @@ import React from "react";
 import {
   AppBar,
   Toolbar,
-  IconButton,
+  Box,
   Typography,
   Stack,
   Button,
   Container,
 } from "@mui/material";
-import Logo from "../images/Logo3.png"
 import { Link as RouterLink } from 'react-router-dom'
 import LoginIcon from '@mui/icons-material/Login';
 
@@ -20,16 +19,16 @@ const Navbar = () => {
     >
       <Container sx={{my:1}}>
       <Toolbar>
-        <IconButton size="large" edge="start" aria-label="logo" component={RouterLink} to="/">
-          <img src={Logo} alt="logo" style={{width:"40px", height:"auto"}}/>
-        </IconButton>
+        <Box sx={{display:"inline-flex", border:"3px solid black", padding:"2px 4px" }}>
         <Typography
-          variant="h6"
+          variant="h5"
           component="div"
-          sx={{ flexGrow: 1, color: "black", fontWeight:"bold" }}
+          sx={{ flexGrow: 1, color: "black", fontWeight:"bold"}}
         >
-          CODEBOX
+        CodeBox
         </Typography>
+        </Box>
+        <Box sx={{flexGrow: 1}}></Box>
         <Stack direction="row" spacing={2}>
           <Button
             component={RouterLink} 
@@ -39,6 +38,9 @@ const Navbar = () => {
               padding: "6px 16px",
               fontWeight: "bold",
               "&:hover": { bgcolor: "grey" },
+              textTransform:"none",
+              fontSize:"20px",
+              border:"1px solid green"
             }}
           >
             Home
