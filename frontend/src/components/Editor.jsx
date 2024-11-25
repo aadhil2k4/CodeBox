@@ -4,6 +4,11 @@ import "codemirror/theme/dracula.css";
 import "codemirror/addon/edit/closetag";
 import "codemirror/addon/edit/closebrackets";
 import "codemirror/lib/codemirror.css";
+import "codemirror/mode/python/python"
+import "codemirror//mode/clike/clike";
+import "codemirror/mode/css/css"
+import "codemirror/mode/htmlmixed/htmlmixed"
+import "codemirror/mode/xml/xml"
 import CodeMirror from "codemirror";
 
 const Editor = () => {

@@ -18,6 +18,7 @@ const useStyles = makeStyles({
 })
 
 export const clientContext = createContext();
+export const filesContext = createContext();
 
 const EditorPage = () => {
     const classes = useStyles();
@@ -28,14 +29,20 @@ const EditorPage = () => {
         {socketId: 3, username: "King"}
     ])
 
+    const [files, setFiles] = useState([
+        {name: "main.js", type: "javascript", "content": ""}
+    ])
+
     return (
         <div className={classes.root}>
             <clientContext.Provider value={clients}>
+                <filesContext.Provider value={{files, setFiles}}>
             <SideBar />
-            </clientContext.Provider>
             <main className={classes.content}>
                 <Editor />
             </main>
+            </filesContext.Provider>
+            </clientContext.Provider>
         </div>
     )
 }
