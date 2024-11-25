@@ -1,10 +1,11 @@
-import React, { useState,useContext } from "react";
+import React, { useState,useContext,useEffect } from "react";
 import { Drawer, Typography, Box, Button } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import Members from "./Members";
 import { clientContext } from "./EditorPage";
+import FileTree from './FileTree'
 
-const drawerWidth = 300;
+const drawerWidth = 240;
 
 const useStyles = makeStyles({
   drawer: {
@@ -31,7 +32,7 @@ const useStyles = makeStyles({
   },
   contentContainer: {
     padding: "16px",
-    textAlign: "center",
+    //textAlign: "center",
     color: "white",
     flexGrow: 1
   },
@@ -48,6 +49,18 @@ const SideBar = () => {
   const classes = useStyles();
   const clients = useContext(clientContext);
 
+  const [fileTree, setFileTree] = useState({})
+
+  const getFileTree = async() => {
+    const response = await fetch('http://localhost:9000/files')
+    const result = await response.json();
+    setFileTree(result.tree);
+  }
+
+  useEffect(()=>{
+    getFileTree()
+  },[])
+
   const [activeLink, setActiveLink] = useState("Members");
 
   const renderContent = () => {
@@ -61,7 +74,9 @@ const SideBar = () => {
         </Box>
         )
       case "Files":
-        return <Typography>Files Section Content</Typography>
+        return(
+          <FileTree tree={fileTree}/>
+        )
       case "Chat":
         return <Typography>Chat Section Content</Typography>;
       default:

@@ -10,6 +10,8 @@ const pty = require("node-pty");
 const fs = require("fs/promises");
 const path = require('path');
 
+app.use(cors());
+
 const ptyProcess = pty.spawn('bash', [], {
     name: 'xtern-color',
     cols: 80,
@@ -51,7 +53,6 @@ app.get('/files', async (req,res)=>{
 })
 
 app.use(bodyParser.json());
-app.use(cors());
 app.use('/auth', authRouter);
 
 server.listen(DPORT, ()=>console.log(`🐳 Docker server runninig on port ${DPORT}`))
