@@ -7,7 +7,8 @@ const cors = require('cors');
 const http = require('http')
 const {Server: SocketServer } = require('socket.io');
 const pty = require("node-pty");
-const fs = require("fs/promises")
+const fs = require("fs/promises");
+const path = require('path');
 
 const ptyProcess = pty.spawn('bash', [], {
     name: 'xtern-color',
@@ -58,22 +59,26 @@ app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 })
 
-function generateFileTree(directory){
-    const tree={}
+async function generateFileTree(directory) {
+    const tree = {};
 
-    async function buildTree(currentDir, currentTree){
-        const files = await fs.readdir(currentDir);
-        for(const file of files){
-            const filePath = path.join(currentDir, file);
-            const  stat = await fs.stat(filePath);
-            if(stat.isDirectory){
-                currentTree[file] = {};
-                buildTree(filePath, currentTree[file]);
-            }else{
-                currentTree[file] = null;
+    async function buildTree(currentDir, currentTree) {
+        try {
+            const entries = await fs.readdir(currentDir, { withFileTypes: true });
+            for (const entry of entries) {
+                const filePath = path.join(currentDir, entry.name);
+                if (entry.isDirectory()) {
+                    currentTree[entry.name] = {};
+                    await buildTree(filePath, currentTree[entry.name]);
+                } else if (entry.isFile()) {
+                    currentTree[entry.name] = null;
+                }
             }
+        } catch (error) {
+            console.error(`Error reading directory ${currentDir}:`, error.message);
         }
     }
 
+    await buildTree(directory, tree);
     return tree;
 }
