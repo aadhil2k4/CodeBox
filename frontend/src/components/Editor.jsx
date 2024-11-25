@@ -37,7 +37,7 @@ const Editor = () => {
   }, []);
 
   return (
-    <div style={{ height: "600px" }}>
+    <div style={{ height: "60vh" }}>
       <textarea ref={textAreaRef}></textarea>
     </div>
   );
