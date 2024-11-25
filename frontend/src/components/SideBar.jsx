@@ -61,18 +61,7 @@ const SideBar = () => {
         </Box>
         )
       case "Files":
-        return(
-          <Button onClick={()=>{
-            const filename= prompt("Enter filename: ");
-            if(filename){
-              const extension = filename.split(".").pop();
-              const type = 
-              extension === "js" ? "javascript"
-            }
-          }}>
-
-          </Button>
-        );
+        return <Typography>Files Section Content</Typography>
       case "Chat":
         return <Typography>Chat Section Content</Typography>;
       default:

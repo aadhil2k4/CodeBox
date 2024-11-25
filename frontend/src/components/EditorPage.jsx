@@ -2,6 +2,7 @@ import { makeStyles} from '@mui/styles'
 import React, { useState,createContext } from 'react'
 import SideBar from './SideBar'
 import Editor from './Editor'
+import Terminal from './terminal'
 
 const useStyles = makeStyles({
     root:{
@@ -40,6 +41,7 @@ const EditorPage = () => {
             <SideBar />
             <main className={classes.content}>
                 <Editor />
+                <Terminal />
             </main>
             </filesContext.Provider>
             </clientContext.Provider>
