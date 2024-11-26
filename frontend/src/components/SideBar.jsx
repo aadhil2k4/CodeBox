@@ -1,8 +1,9 @@
 import React, { useState,useContext,useEffect } from "react";
 import { Drawer, Typography, Box, Button } from "@mui/material";
+import socket from "../socket"; 
 import { makeStyles } from "@mui/styles";
 import Members from "./Members";
-import { clientContext } from "./EditorPage";
+import { clientContext, filesContext } from "./EditorPage";
 import FileTree from './FileTree'
 
 const drawerWidth = 240;
@@ -29,6 +30,7 @@ const useStyles = makeStyles({
     justifyContent: "center",
     gap: "8px",
     margin: "4px 0",
+    marginBottom:"0px"
   },
   contentContainer: {
     padding: "16px",
@@ -48,6 +50,7 @@ const useStyles = makeStyles({
 const SideBar = () => {
   const classes = useStyles();
   const clients = useContext(clientContext);
+  const {selectedFile, setSelectedFile} = useContext(filesContext);
 
   const [fileTree, setFileTree] = useState({})
 
@@ -60,6 +63,13 @@ const SideBar = () => {
   useEffect(()=>{
     getFileTree()
   },[])
+
+  useEffect(()=>{
+    socket.on('file:refresh', getFileTree());
+    return () => {
+      socket.off('file:refresh', getFileTree())
+    }
+  })
 
   const [activeLink, setActiveLink] = useState("Members");
 
@@ -75,7 +85,7 @@ const SideBar = () => {
         )
       case "Files":
         return(
-          <FileTree tree={fileTree}/>
+          <FileTree onSelect={(path)=>setSelectedFile(path)} tree={fileTree}/>
         )
       case "Chat":
         return <Typography>Chat Section Content</Typography>;

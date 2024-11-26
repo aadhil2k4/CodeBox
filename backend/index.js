@@ -9,6 +9,7 @@ const {Server: SocketServer } = require('socket.io');
 const pty = require("node-pty");
 const fs = require("fs/promises");
 const path = require('path');
+const chokidar = require('chokidar')
 
 app.use(cors());
 
@@ -33,10 +34,17 @@ ptyProcess.onData(data => {
 
 io.on('connection', (socket)=>{
     console.log(`Socket connected`, socket.id);
+    socket.emit('file:refresh')
     socket.on('terminal:write', (data)=>{
         ptyProcess.write(data);
     })
 })
+
+chokidar.watch('./user').on('all', async (event, path) => {
+    const fileTree = await generateFileTree('./user');
+    io.emit('file:refresh', fileTree);  // Emit updated file structure
+});
+
 
 const authRouter = require('./Router/AuthRouter');
 
@@ -47,10 +55,15 @@ app.get('/', (req,res)=>{
     res.send('Hi');
 })
 
-app.get('/files', async (req,res)=>{
-    const fileTree = await generateFileTree('./user');
-    return res.json({tree: fileTree})
-})
+app.get('/files', async (req, res) => {
+    try {
+        const fileTree = await generateFileTree('./user');
+        return res.json({ tree: fileTree });
+    } catch (error) {
+        res.status(500).send('Error generating file tree');
+    }
+});
+
 
 app.use(bodyParser.json());
 app.use('/auth', authRouter);

@@ -1,32 +1,41 @@
-import React, {useEffect, useRef} from 'react'
-import { Terminal as XTerminal} from 'xterm'
-import "xterm/css/xterm.css"
-import socket from '../socket'
+import React, {useEffect, useRef} from 'react';
+import { Terminal as XTerminal } from 'xterm';
+import "xterm/css/xterm.css";
+import socket from '../socket';
 
 const Terminal = () => {
     const terminalRef = useRef();
-    const isRendered = useRef(false)
+    const isRendered = useRef(false);
 
-    useEffect(()=>{
-        if(isRendered.current) return;
+    useEffect(() => {
+        if (isRendered.current) return;
         isRendered.current = true;
         const term = new XTerminal({
-            rows:20
+            rows: 20
         });
         term.open(terminalRef.current);
-        term.onData(data=>{
+    
+        term.onData(data => {
             socket.emit('terminal:write', data);
-        })
-        socket.on('terminal:data', (data)=>{
-            term.write(data);
         });
-    },[])
+    
+        function onTerminalData(data) {
+            if (typeof data === 'string') {  // Ensure data is a string
+                term.write(data);
+            } else {
+                console.error('Received non-string data in terminal:', data);
+            }
+        }
+    
+        socket.on('terminal:data', onTerminalData);
+    }, []);
+    
 
-  return (
-    <>
-    <div id="terminal" ref={terminalRef} style={{marginTop:"10px", height:"10px"}}/>
-    </>
-  )
-}
+    return (
+        <>
+            <div id="terminal" ref={terminalRef} style={{ marginTop: "10px", height: "30vh" }} />
+        </>
+    );
+};
 
-export default Terminal
+export default Terminal;

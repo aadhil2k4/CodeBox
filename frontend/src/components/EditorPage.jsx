@@ -33,13 +33,16 @@ const EditorPage = () => {
     const [files, setFiles] = useState([
         {name: "main.js", type: "javascript", "content": ""}
     ])
+    const [selectedFile,setSelectedFile] = useState("");
+
 
     return (
         <div className={classes.root}>
             <clientContext.Provider value={clients}>
-                <filesContext.Provider value={{files, setFiles}}>
+                <filesContext.Provider value={{files, setFiles, selectedFile, setSelectedFile}}>
             <SideBar />
             <main className={classes.content}>
+                {selectedFile && <p>{selectedFile.replaceAll("/"," > ")}</p>}
                 <Editor />
                 <Terminal />
             </main>

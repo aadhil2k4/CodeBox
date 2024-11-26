@@ -2,12 +2,16 @@ import React from 'react';
 import FolderIcon from "@mui/icons-material/Folder"
 import InsertDriveFileIcon from "@mui/icons-material/InsertDriveFile"
 
-const FileTreeNode = ({ name, nodes }) => {
+const FileTreeNode = ({ name, nodes, onSelect, path }) => {
 
     const isDir = !!nodes
 
     return (
-        <div>
+        <div onClick={(e)=>{
+            e.stopPropagation();
+            if(isDir) return;
+            onSelect(path)
+        }}>
             <p>
             {isDir ? (
                     <FolderIcon style={{ marginRight: '8px', color: '#FFD700' }} />
@@ -23,6 +27,8 @@ const FileTreeNode = ({ name, nodes }) => {
                             <FileTreeNode
                                 name={child}
                                 nodes={nodes[child]}
+                                path={path + '/' + child}
+                                onSelect={onSelect}
                             />
                         </li>
                     ))}
