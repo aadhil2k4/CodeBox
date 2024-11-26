@@ -34,7 +34,10 @@ ptyProcess.onData(data => {
 
 io.on('connection', (socket)=>{
     console.log(`Socket connected`, socket.id);
-    socket.emit('file:refresh')
+    socket.emit('file:refresh');
+    socket.on('file:change', async ({path, content}) => {
+        await fs.writeFile(`./user${path}`, content)
+    })
     socket.on('terminal:write', (data)=>{
         ptyProcess.write(data);
     })
