@@ -20,7 +20,7 @@ const FileTreeNode = ({ name, nodes, onSelect, path }) => {
                 )}   
                 {name}
             </p>
-            {nodes && (
+            {nodes && name!=="node_modules" && (
                 <ul style={{listStyleType:"none", lineHeight:"20px"}}>
                     {Object.keys(nodes).map(child => (
                         <li key={child}>

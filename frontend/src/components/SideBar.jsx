@@ -1,10 +1,10 @@
-import React, { useState,useContext,useEffect } from "react";
+import React, { useState, useContext, useEffect, useCallback } from "react";
 import { Drawer, Typography, Box, Button } from "@mui/material";
-import socket from "../socket"; 
+import socket from "../socket";
 import { makeStyles } from "@mui/styles";
 import Members from "./Members";
-import { clientContext, filesContext } from "./EditorPage";
-import FileTree from './FileTree'
+import { clientContext, filesContext, selectedFileContentContext, codeContext} from "./EditorPage";
+import FileTree from "./FileTree";
 
 const drawerWidth = 240;
 
@@ -19,7 +19,7 @@ const useStyles = makeStyles({
     color: "white",
     borderRight: "4px solid white",
     display: "flex",
-    flexDirection: "column"
+    flexDirection: "column",
   },
   root: {
     display: "flex",
@@ -30,63 +30,83 @@ const useStyles = makeStyles({
     justifyContent: "center",
     gap: "8px",
     margin: "4px 0",
-    marginBottom:"0px"
+    marginBottom: "0px",
   },
   contentContainer: {
     padding: "16px",
-    //textAlign: "center",
     color: "white",
-    flexGrow: 1
+    flexGrow: 1,
   },
-  footer:{
+  footer: {
     display: "flex",
     justifyContent: "space-around",
-    marginTop:"auto",
+    marginTop: "auto",
     marginBottom: "15px",
-    padding: "0 8px"
-  }
+    padding: "0 8px",
+  },
 });
 
 const SideBar = () => {
   const classes = useStyles();
   const clients = useContext(clientContext);
-  const {selectedFile, setSelectedFile} = useContext(filesContext);
+  const { selectedFile, setSelectedFile } = useContext(filesContext);
+  const {code, setCode} = useContext(codeContext);
 
-  const [fileTree, setFileTree] = useState({})
+  const [fileTree, setFileTree] = useState({});
+  const {selectedFileContent, setSelectedFileContent} = useContext(selectedFileContentContext);
 
-  const getFileTree = async() => {
-    const response = await fetch('http://localhost:9000/files')
+  const getFileTree = async () => {
+    const response = await fetch("http://localhost:9000/files");
     const result = await response.json();
     setFileTree(result.tree);
-  }
+  };
 
-  useEffect(()=>{
-    getFileTree()
-  },[])
-
-  useEffect(()=>{
-    socket.on('file:refresh', getFileTree());
-    return () => {
-      socket.off('file:refresh', getFileTree())
+  const getFileContents = useCallback(async () => {
+    if (!selectedFile) return;
+    try {
+      const response = await fetch(
+        `http://localhost:9000/files/content?path=${selectedFile}`
+      );
+      const result = await response.json();
+      setSelectedFileContent(result.content);
+    } catch (error) {
+      console.error("Error fetching file contents:", error);
     }
-  })
+  }, [selectedFile, setSelectedFileContent]);
+  
+
+  useEffect(()=>{
+    if(selectedFile && selectedFileContent){
+      setCode(selectedFileContent);
+    }
+  },[selectedFile, selectedFileContent, setCode])
+
+  useEffect(() => {
+    if (selectedFile) getFileContents();
+  }, [getFileContents, selectedFile]);
+
+  useEffect(() => {
+    const refreshHandler = getFileTree;
+    socket.on("file:refresh", refreshHandler);
+    return () => {
+      socket.off("file:refresh", refreshHandler);
+    };
+  }, [getFileTree]);
 
   const [activeLink, setActiveLink] = useState("Members");
 
   const renderContent = () => {
     switch (activeLink) {
       case "Members":
-        return( 
+        return (
           <Box>
-          {clients.map((client)=>(
-          <Members key={client.socketId} username={client.username} />
-        ))}
-        </Box>
-        )
+            {clients.map((client) => (
+              <Members key={client.socketId} username={client.username} />
+            ))}
+          </Box>
+        );
       case "Files":
-        return(
-          <FileTree onSelect={(path)=>setSelectedFile(path)} tree={fileTree}/>
-        )
+        return <FileTree onSelect={(path) => setSelectedFile(path)} tree={fileTree} />;
       case "Chat":
         return <Typography>Chat Section Content</Typography>;
       default:
@@ -111,7 +131,6 @@ const SideBar = () => {
             display: "inline-block",
             padding: "4px 8px",
             color: "white",
-            marginBottom:"1px solid white"
           }}
         >
           <Typography variant="h5">CodeBox</Typography>
@@ -142,8 +161,12 @@ const SideBar = () => {
         </Box>
         <Box className={classes.contentContainer}>{renderContent()}</Box>
         <Box className={classes.footer}>
-            <Button variant="outline" sx={{color:"white", backgroundColor:"green"}}>Copy Id</Button>
-            <Button variant="outline" sx={{color:"white", backgroundColor:"red"}}>Leave Room</Button>
+          <Button variant="outline" sx={{ color: "white", backgroundColor: "green" }}>
+            Copy Id
+          </Button>
+          <Button variant="outline" sx={{ color: "white", backgroundColor: "red" }}>
+            Leave Room
+          </Button>
         </Box>
       </Drawer>
     </div>
