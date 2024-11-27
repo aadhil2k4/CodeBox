@@ -1,10 +1,10 @@
-import { Modal, Box, Typography,TextField,Button } from '@mui/material'
 import React from 'react'
+import { Modal, Box, Typography,TextField, Button } from '@mui/material'
 
-const JoinRoomModal = ({open, handleClose}) => {
+const CreateRoomModel = ({open, handleClose}) => {
   return (
     <div>
-        <Modal open={open} onClose={handleClose}>
+                <Modal open={open} onClose={handleClose}>
             <Box sx={{  position: 'absolute',
                         top: '50%',
                         left: '50%',
@@ -15,14 +15,14 @@ const JoinRoomModal = ({open, handleClose}) => {
                         boxShadow: 24,
                         p: 4,}}>
                 <Typography id="modal-title" variant="h6" component="h2" sx={{textAlign:"center"}}>
-                    Join a New Room ?
+                    Create a Room ?
                 </Typography>
-                <TextField name="RoomId" placeholder='Enter RoomId' fullWidth required autoFocus sx={{mb:2}}></TextField>
-                <Button>Join</Button>
+                <TextField name="RoomName" placeholder='Enter Room Name' fullWidth required autoFocus sx={{mb:2}}></TextField>
+                <Button>Create Room</Button>
             </Box>
         </Modal>
     </div>
   )
 }
 
-export default JoinRoomModal
+export default CreateRoomModel

@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { handleSuccess } from '../utils';
 import { ToastContainer } from 'react-toastify';
 import JoinRoomModal from './JoinRoomModal';
+import CreateRoomModel from './CreateRoomModel';
 //import EditorPage from './EditorPage';
 
 const UserDash = () => {
@@ -38,8 +39,9 @@ const UserDash = () => {
       <button onClick={handleLogout}>Logout</button>
       <h2 style={{marginBottom:"10rem"}}>Your Sessions: </h2>
       <button style={{marginRight: "2rem"}} onClick={handlejoinOpen}>Join New Session</button>
+      <button onClick={handlecreateOpen}>Create New Session</button>
       <JoinRoomModal open={joinopen} handleClose={handlejoinClose} />
-      <button>Create New Session</button>
+      <CreateRoomModel open={createopen} handleClose={handlecreateClose} />
       <ToastContainer />
       </div>
   )
