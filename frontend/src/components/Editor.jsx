@@ -22,7 +22,6 @@ const Editor = () => {
 
   const isSaved = selectedFileContent === code;
 
-  // Initialize CodeMirror editor
   useEffect(() => {
     if (!editorInstanceRef.current && textAreaRef.current) {
       editorInstanceRef.current = CodeMirror.fromTextArea(textAreaRef.current, {
@@ -35,7 +34,6 @@ const Editor = () => {
 
       editorInstanceRef.current.setSize("100%", "100%");
 
-      // Sync changes in the editor with `code` state
       editorInstanceRef.current.on("change", (instance) => {
         setCode(instance.getValue());
       });
@@ -49,14 +47,12 @@ const Editor = () => {
     };
   }, [setCode]);
 
-  // Update the editor content when `selectedFileContent` changes
   useEffect(() => {
     if (editorInstanceRef.current && selectedFileContent) {
       editorInstanceRef.current.setValue(selectedFileContent);
     }
   }, [selectedFileContent]);
 
-  // Auto-save file content
   useEffect(() => {
     if (code && !isSaved) {
       const timer = setTimeout(() => {
@@ -72,8 +68,8 @@ const Editor = () => {
   }, [code, isSaved, selectedFile]);
 
   return (
-    <div style={{ height: "60vh" }}>
-      <textarea ref={textAreaRef}></textarea>
+    <div style={{ height: "60vh", border: "1px solid #ccc" }}>
+      <textarea ref={textAreaRef} style={{border: "1px solid red"}}></textarea>
     </div>
   );
 };

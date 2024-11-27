@@ -17,7 +17,6 @@ const useStyles = makeStyles({
     width: drawerWidth,
     backgroundColor: "black !important",
     color: "white",
-    borderRight: "4px solid white",
     display: "flex",
     flexDirection: "column",
   },
@@ -36,13 +35,15 @@ const useStyles = makeStyles({
     padding: "16px",
     color: "white",
     flexGrow: 1,
+    overflow: "auto"
   },
   footer: {
     display: "flex",
     justifyContent: "space-around",
     marginTop: "auto",
     marginBottom: "15px",
-    padding: "0 8px",
+    padding: "10px 8px",
+    borderTop: "1px solid white"
   },
 });
 

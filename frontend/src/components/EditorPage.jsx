@@ -1,22 +1,32 @@
 import { makeStyles} from '@mui/styles'
-import React, { useState,createContext, useContext } from 'react'
+import React, { useState,createContext } from 'react'
 import SideBar from './SideBar'
 import Editor from './Editor'
 import Terminal from './terminal'
 
 const useStyles = makeStyles({
-    root:{
-        display: 'flex',
-        height: '100vh'
+    root: {
+      display: 'flex',
+      height: '100vh',
     },
-    content:{
-        flexGrow: 1,
-        padding: "16px",
-        minHeight: "100vh",
-        backgroundColor: "#001122",
-        color: 'white'
-    }
-})
+    content: {
+      flexGrow: 1,
+      paddingRight: '16px',
+      paddingLeft: '16px',
+      minHeight: '100vh',
+      backgroundColor: '#001122',
+      color: 'white',
+    },
+    filePath: {
+      textDecoration: 'underline',
+      marginBottom: '10px',
+    },
+    noFileSelected: {
+      color: '#ccc',
+      fontStyle: 'italic',
+      marginBottom: '10px',
+    },
+  });
 
 export const clientContext = createContext();
 export const filesContext = createContext();
@@ -49,7 +59,11 @@ const EditorPage = () => {
                 <filesContext.Provider value={{files, setFiles, selectedFile, setSelectedFile}}>
             <SideBar />
             <main className={classes.content}>
-                {selectedFile && <p>{selectedFile.replaceAll("/"," > ")}</p>}
+            {selectedFile ? (
+                  <p className={classes.filePath}>{selectedFile.replaceAll('/', ' > ')}</p>
+                ) : (
+                  <p className={classes.noFileSelected}>Select a file</p>
+                )}
                 <Editor />
                 <Terminal />
             </main>

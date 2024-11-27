@@ -18,22 +18,24 @@ const Terminal = () => {
         term.onData(data => {
             socket.emit('terminal:write', data);
         });
-    
         function onTerminalData(data) {
-            if (typeof data === 'string') {  // Ensure data is a string
+            if (typeof data === 'string') {  
                 term.write(data);
             } else {
                 console.error('Received non-string data in terminal:', data);
             }
         }
-    
         socket.on('terminal:data', onTerminalData);
     }, []);
     
-
     return (
         <>
-            <div id="terminal" ref={terminalRef} style={{ marginTop: "10px", height: "30vh" }} />
+            <div id="terminal" ref={terminalRef} style={{
+                marginTop: "10px",
+                height: "30vh", 
+                overflow: "auto", 
+                border: "1px solid #ccc"}} 
+                />
         </>
     );
 };
