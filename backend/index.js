@@ -7,9 +7,11 @@ const cors = require('cors');
 const http = require('http')
 const {Server: SocketServer } = require('socket.io');
 const pty = require("node-pty");
-const fs = require("fs/promises");
+const chokidar = require('chokidar');
+const { generateFileTree } = require('./Utils/fileUtils')
+const socketEvents = require('./Events/socketEvents');
+const fs = require('fs/promises'); 
 const path = require('path');
-const chokidar = require('chokidar')
 
 app.use(cors());
 
@@ -25,29 +27,8 @@ const server = http.createServer(app);
 const io = new SocketServer({
     cors: {origin: '*'}
 })
-
+socketEvents(io, ptyProcess)
 io.attach(server);
-
-ptyProcess.onData(data => {
-    io.emit('terminal:data', data);
-})
-
-io.on('connection', (socket)=>{
-    console.log(`Socket connected`, socket.id);
-    socket.emit('file:refresh');
-    socket.on('file:change', async ({path, content}) => {
-        await fs.writeFile(`./user${path}`, content)
-    })
-    socket.on('terminal:write', (data)=>{
-        ptyProcess.write(data);
-    })
-})
-
-chokidar.watch('./user').on('all', async (event, path) => {
-    const fileTree = await generateFileTree('./user');
-    io.emit('file:refresh', fileTree);  // Emit updated file structure
-});
-
 
 const authRouter = require('./Router/AuthRouter');
 
@@ -69,7 +50,7 @@ app.get('/files', async (req, res) => {
 
 app.get('/files/content', async(req,res)=>{
     const path = req.query.path;
-    const content = await fs.readFile(`./user${path}`, `utf-8`)
+    const content = await fs.readFile(`./user${path}`, 'utf-8')
     return res.json({content});
 })
 
@@ -81,27 +62,3 @@ server.listen(DPORT, ()=>console.log(`🐳 Docker server runninig on port ${DPOR
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 })
-
-async function generateFileTree(directory) {
-    const tree = {};
-
-    async function buildTree(currentDir, currentTree) {
-        try {
-            const entries = await fs.readdir(currentDir, { withFileTypes: true });
-            for (const entry of entries) {
-                const filePath = path.join(currentDir, entry.name);
-                if (entry.isDirectory()) {
-                    currentTree[entry.name] = {};
-                    await buildTree(filePath, currentTree[entry.name]);
-                } else if (entry.isFile()) {
-                    currentTree[entry.name] = null;
-                }
-            }
-        } catch (error) {
-            console.error(`Error reading directory ${currentDir}:`, error.message);
-        }
-    }
-
-    await buildTree(directory, tree);
-    return tree;
-}
