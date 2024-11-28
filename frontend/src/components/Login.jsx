@@ -3,8 +3,7 @@ import React from 'react'
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined'
 import { Link as RouterLink, useNavigate } from "react-router-dom"
 import { useState } from 'react'
-import { handleError, handleSuccess } from '../utils';
-import { ToastContainer } from 'react-toastify'
+import { toast, Toaster } from 'react-hot-toast'
 import LoginImage from "../images/rb_7893.png"
 import Navbar from './Navbar'
 
@@ -30,7 +29,7 @@ const Login = () => {
         e.preventDefault()
         const {email, password} = loginInfo
         if(!email || !password){
-            return handleError('All fields are required')
+            return toast.error('All fields are required')
         }
         try{
             const url = 'http://localhost:8080/auth/login'
@@ -44,7 +43,7 @@ const Login = () => {
             const result = await response.json();
             const {success, message, error, jwtToken, name} = result;
             if(success){
-                handleSuccess(message);
+                toast.success(message);
                 localStorage.setItem('token', jwtToken);
                 localStorage.setItem('loggedInUser', name);
                 setTimeout(() => {
@@ -52,13 +51,13 @@ const Login = () => {
                 }, 1000)
             }else if(error){
                 const details = error.details[0].message;
-                handleError(details);
+                toast.error(details);
             }
             else if(!success){
-                handleError(message || 'Signup failed')
+                toast.error(message || 'Signup failed')
             }
         }catch(err){
-            handleError(err);
+            toast.error(err);
         }
     }
 
@@ -108,7 +107,7 @@ const Login = () => {
         </Paper>
         </Grid2>
         </Grid2>
-        <ToastContainer />
+        <Toaster position='top-center'></Toaster>
     </Container>
     </>
   )

@@ -2,9 +2,8 @@ import { Container, Paper, Avatar, Typography, Box, TextField, Button, Grid2, Li
 import React from 'react'
 import UploadIcon from '@mui/icons-material/Upload';
 import { Link as RouterLink, useNavigate } from "react-router-dom";
-import { ToastContainer } from 'react-toastify'
+import { Toaster, toast } from 'react-hot-toast'
 import { useState } from 'react';
-import { handleError, handleSuccess } from '../utils';
 import Navbar from './Navbar';
 import SignUpImage from '../images/rb_2745.png'
 
@@ -30,7 +29,7 @@ const SignUp = () => {
         e.preventDefault()
         const {name, email, password} = signupInfo
         if(!name || !email || !password){
-            return handleError('All fields are required')
+            return toast.error('All fields are required')
         }
         try{
             const url = 'http://localhost:8080/auth/signup'
@@ -44,19 +43,19 @@ const SignUp = () => {
             const result = await response.json();
             const {success, message, error} = result;
             if(success){
-                handleSuccess(message);
+                toast.success(message);
                 setTimeout(() => {
                     navigate('/login')
                 }, 1000)
             }else if(error){
                 const details = error.details[0].message;
-                handleError(details);
+                toast.error(details);
             }
             else if(!success){
-                handleError(message || 'Signup failed')
+                toast.error(message || 'Signup failed')
             }
         }catch(err){
-            handleError(err);
+            toast.error(err);
         }
     }
 
@@ -98,7 +97,7 @@ const SignUp = () => {
                 </Grid2>
             </Grid2>
         </Paper>
-        <ToastContainer />
+        <Toaster position='top-center'></Toaster>
         </Grid2>
         </Grid2>
     </Container>

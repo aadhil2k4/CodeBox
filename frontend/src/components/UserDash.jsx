@@ -1,8 +1,7 @@
 import React, { useState } from 'react'
 import { useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom';
-import { handleSuccess } from '../utils';
-import { ToastContainer } from 'react-toastify';
+import { toast, Toaster } from 'react-hot-toast';
 import {Box, Typography, Button, Modal, TextField} from '@mui/material'
 //import EditorPage from './EditorPage';
 import { v4 as uuidv4 } from "uuid";
@@ -29,7 +28,7 @@ const UserDash = () => {
   const handleLogout = (e) =>{
     localStorage.removeItem('token');
     localStorage.removeItem('loggedInUser');
-    handleSuccess('User Logged out')
+    toast.success('User Logged out')
     setTimeout(()=>{
       navigate('/login');
     },1000)
@@ -41,6 +40,7 @@ const UserDash = () => {
   return (
     /*<EditorPage />*/
     <div style={{textAlign: "center"}}>
+      <Toaster position='top-center'></Toaster>
       <h1>Hi {loggedInUser} 👋🏻</h1>
       <button onClick={handleLogout}>Logout</button>
       <h2 style={{marginBottom:"10rem"}}>Your Sessions: </h2>
@@ -60,12 +60,12 @@ const UserDash = () => {
                     Create a Room ?
                 </Typography>
                 <TextField name="RoomName" placeholder='Enter Room Name' fullWidth /*required*/ autoFocus sx={{mb:2}}></TextField>
-                <TextField name="RoomId" placeholder='Enter Room Id' fullWidth required autoFocus sx={{mb:2}}></TextField>
+                <TextField name="RoomId" placeholder='Enter Room Id' fullWidth required autoFocus sx={{mb:2}} value={roomId} 
+                  onChange={(e)=>setRoomId(e.target.value)}></TextField>
                 <Button>Create Room</Button>
                 <Link onClick={generateRoomId}>Create New Room</Link>
             </Box>
         </Modal>
-      <ToastContainer />
       </div>
   )
 }
