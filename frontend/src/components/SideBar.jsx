@@ -5,20 +5,34 @@ import { makeStyles } from "@mui/styles";
 import Members from "./Members";
 import { clientContext, filesContext, selectedFileContentContext, codeContext} from "./EditorPage";
 import FileTree from "./FileTree";
+import PeopleOutlineOutlinedIcon from '@mui/icons-material/PeopleOutlineOutlined';
+import FolderOutlinedIcon from '@mui/icons-material/FolderOutlined';
+import ChatBubbleOutlineOutlinedIcon from '@mui/icons-material/ChatBubbleOutlineOutlined';
 
-const drawerWidth = 240;
+const drawerWidth = 300;
 
 const useStyles = makeStyles({
+  drawerWrapper:{
+    height: "calc(100vh - 16px)",
+    backgroundColor: "black"
+  },
   drawer: {
     width: drawerWidth,
     flexShrink: 0,
+    backgroundColor:"black",
+    height: "calc(100vh - 16px)"
   },
   drawerPaper: {
     width: drawerWidth,
-    backgroundColor: "black !important",
+    backgroundColor: "#262626 !important",
     color: "white",
     display: "flex",
     flexDirection: "column",
+    //borderRadius: "15px",
+    //marginTop: "10px",
+    //marginLeft: "1rem",
+    //marginBottom:"8px",
+    //height: "calc(100vh - 16px)",
   },
   root: {
     display: "flex",
@@ -26,7 +40,7 @@ const useStyles = makeStyles({
   },
   linksContainer: {
     display: "flex",
-    justifyContent: "center",
+    justifyContent: "space-between",
     gap: "8px",
     margin: "4px 0",
     marginBottom: "0px",
@@ -118,6 +132,7 @@ const SideBar = () => {
   return (
     <div className={classes.root}>
       {/* Sidebar */}
+      <Box className={classes.drawerWrapper}>
       <Drawer
         className={classes.drawer}
         variant="permanent"
@@ -134,7 +149,7 @@ const SideBar = () => {
             color: "white",
           }}
         >
-          <Typography variant="h5">CodeBox</Typography>
+          <Typography variant="h6">CodeBox</Typography>
         </Box>
         <Box
           sx={{
@@ -143,7 +158,9 @@ const SideBar = () => {
           }}
         ></Box>
         <Box className={classes.linksContainer}>
-          {["Members", "Files", "Chat"].map((text) => (
+          {[{text:"Members",icon:<PeopleOutlineOutlinedIcon />},
+          {text:"Files",icon:<FolderOutlinedIcon />},
+          {text:"Chat",icon:<ChatBubbleOutlineOutlinedIcon />}].map(({text,icon}) => (
             <Button
               key={text}
               onClick={() => setActiveLink(text)}
@@ -156,7 +173,7 @@ const SideBar = () => {
                 },
               }}
             >
-              {text}
+              {text}{icon}
             </Button>
           ))}
         </Box>
@@ -170,6 +187,7 @@ const SideBar = () => {
           </Button>
         </Box>
       </Drawer>
+      </Box>
     </div>
   );
 };

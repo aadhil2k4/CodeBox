@@ -40,6 +40,7 @@ const UserDash = () => {
       return;
     }
     navigate(`/editor/${roomId}`, { state: { roomName, roomId } });
+    toast.success("Room is created")
   };
 
   return (
