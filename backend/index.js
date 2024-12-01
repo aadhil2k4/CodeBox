@@ -15,21 +15,13 @@ const path = require('path');   //file path manipulations
 
 app.use(cors());
 
-const ptyProcess = pty.spawn('bash', [], {     //spawn a terminal emulator
-    name: 'xtern-color',        //terminal type for colored output
-    cols: 80,
-    rows:30,
-    cwd: process.env.INIT_CWD + "/user",    //current working directory
-    env: process.env
-}) 
-
 const server = http.createServer(app);  //Create http server
 
 const io = new SocketServer({   //Create websocket
     cors: {origin: '*'} //Allow connection from any origin
 })
 
-socketEvents(io, ptyProcess)    
+socketEvents(io)    
 
 io.attach(server);  //attach socket server and http server
 
