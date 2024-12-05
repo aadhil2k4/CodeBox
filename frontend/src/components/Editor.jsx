@@ -12,7 +12,7 @@ import "codemirror/mode/xml/xml";
 import CodeMirror from "codemirror";
 import socket from "../socket";
 import { filesContext, selectedFileContentContext, codeContext } from "./EditorPage";
-import { debounce } from "lodash"; // Import lodash for debouncing
+import { debounce } from "lodash";
 
 const Editor = () => {
   const textAreaRef = useRef(null);
@@ -21,17 +21,22 @@ const Editor = () => {
   const { selectedFileContent, setSelectedFileContent } = useContext(selectedFileContentContext);
   const { code, setCode } = useContext(codeContext);
 
-  const isSaved = selectedFileContent === code;
+  const selectedFileRef = useRef(selectedFile); // Store selectedFile in a ref
 
-  // Debounce the socket emission to prevent overloading with events
+  useEffect(() => {
+    selectedFileRef.current = selectedFile; // Update ref when selectedFile changes
+  }, [selectedFile]);
+
   const debouncedFileChange = useRef(
     debounce((newCode) => {
+      console.log(`Emitting code:update for file: ${selectedFileRef.current}, Content:`, newCode);
       socket.emit("code:update", {
-        path: selectedFile,
+        path: selectedFileRef.current,
         content: newCode,
       });
-    }, 500) // Debounce for 500ms
+    }, 500)
   ).current;
+  
 
   useEffect(() => {
     if (!editorInstanceRef.current && textAreaRef.current) {
@@ -45,12 +50,12 @@ const Editor = () => {
 
       editorInstanceRef.current.setSize("100%", "100%");
 
-      // Handle local changes (emitting only when content changes)
+      // Handle local changes
       editorInstanceRef.current.on("change", (instance) => {
         const newCode = instance.getValue();
         setCode(newCode);
 
-        // Debounced update to prevent multiple events being sent too quickly
+        // Emit changes to other clients
         debouncedFileChange(newCode);
       });
     }
@@ -65,7 +70,7 @@ const Editor = () => {
 
   useEffect(() => {
     if (editorInstanceRef.current && selectedFileContent) {
-      // Update only if the content differs to avoid unnecessary re-renders
+      // Update only if the content differs
       if (editorInstanceRef.current.getValue() !== selectedFileContent) {
         editorInstanceRef.current.setValue(selectedFileContent);
       }
@@ -73,35 +78,48 @@ const Editor = () => {
   }, [selectedFileContent]);
 
   useEffect(() => {
-    // Listen for real-time updates from other clients
-    socket.on("code:update", ({ path, content }) => {
+    const handleCodeUpdate = ({ path, content }) => {
       if (path === selectedFile && editorInstanceRef.current) {
-        // Update the content if the current content is different
-        if (editorInstanceRef.current.getValue() !== content) {
+        const currentContent = editorInstanceRef.current.getValue();
+        if (currentContent !== content) {
+          // Update editor without triggering a new `code:update`
+          editorInstanceRef.current.off("change");
           editorInstanceRef.current.setValue(content);
+          editorInstanceRef.current.on("change", (instance) => {
+            const newCode = instance.getValue();
+            setCode(newCode);
+            debouncedFileChange(newCode);
+          });
           setCode(content);
+          setSelectedFileContent(content);
         }
       }
-    });
-
-    return () => {
-      socket.off("code:update");
     };
-  }, [selectedFile, setCode]);
+  
+    socket.on("code:update", handleCodeUpdate);
+  
+    return () => {
+      socket.off("code:update", handleCodeUpdate);
+    };
+  }, [selectedFile, setCode, setSelectedFileContent]);
+  
 
   useEffect(() => {
-    if (code && !isSaved) {
-      const timer = setTimeout(() => {
+    console.log(selectedFile)
+    // Emit file changes to save content
+    const saveChanges = setTimeout(() => {
+      if (code && selectedFileContent !== code) {
         socket.emit("file:change", {
           path: selectedFile,
           content: code,
         });
-      }, 5000);
-      return () => {
-        clearTimeout(timer);
-      };
-    }
-  }, [code, isSaved, selectedFile]);
+      }
+    }, 2000);
+
+    return () => {
+      clearTimeout(saveChanges);
+    };
+  }, [code, selectedFile, selectedFileContent]);
 
   return (
     <div style={{ height: "60vh", border: "1px solid #ccc" }}>

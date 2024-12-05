@@ -42,9 +42,6 @@ const EditorPage = () => {
         {socketId: 3, username: "King"}
     ])
 
-    const [files, setFiles] = useState([
-        {name: "main.js", type: "javascript", "content": ""}
-    ])
     const [selectedFile,setSelectedFile] = useState("");
     const [selectedFileContent, setSelectedFileContent] = useState("");
     const [code, setCode] = useState('')
@@ -56,7 +53,7 @@ const EditorPage = () => {
             <codeContext.Provider value={{code,setCode}}>
             <selectedFileContentContext.Provider value={{selectedFileContent,setSelectedFileContent}}>
             <clientContext.Provider value={clients}>
-                <filesContext.Provider value={{files, setFiles, selectedFile, setSelectedFile}}>
+                <filesContext.Provider value={{selectedFile, setSelectedFile}}>
             <SideBar />
             <main className={classes.content}>
             {selectedFile ? (
