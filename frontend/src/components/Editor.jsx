@@ -12,6 +12,7 @@ import "codemirror/mode/xml/xml";
 import CodeMirror from "codemirror";
 import socket from "../socket";
 import { filesContext, selectedFileContentContext, codeContext } from "./EditorPage";
+import { debounce } from "lodash"; // Import lodash for debouncing
 
 const Editor = () => {
   const textAreaRef = useRef(null);
@@ -21,6 +22,16 @@ const Editor = () => {
   const { code, setCode } = useContext(codeContext);
 
   const isSaved = selectedFileContent === code;
+
+  // Debounce the socket emission to prevent overloading with events
+  const debouncedFileChange = useRef(
+    debounce((newCode) => {
+      socket.emit("code:update", {
+        path: selectedFile,
+        content: newCode,
+      });
+    }, 500) // Debounce for 500ms
+  ).current;
 
   useEffect(() => {
     if (!editorInstanceRef.current && textAreaRef.current) {
@@ -34,8 +45,13 @@ const Editor = () => {
 
       editorInstanceRef.current.setSize("100%", "100%");
 
+      // Handle local changes (emitting only when content changes)
       editorInstanceRef.current.on("change", (instance) => {
-        setCode(instance.getValue());
+        const newCode = instance.getValue();
+        setCode(newCode);
+
+        // Debounced update to prevent multiple events being sent too quickly
+        debouncedFileChange(newCode);
       });
     }
 
@@ -45,13 +61,33 @@ const Editor = () => {
         editorInstanceRef.current = null;
       }
     };
-  }, [setCode]);
+  }, [selectedFile, setCode]);
 
   useEffect(() => {
     if (editorInstanceRef.current && selectedFileContent) {
-      editorInstanceRef.current.setValue(selectedFileContent);
+      // Update only if the content differs to avoid unnecessary re-renders
+      if (editorInstanceRef.current.getValue() !== selectedFileContent) {
+        editorInstanceRef.current.setValue(selectedFileContent);
+      }
     }
   }, [selectedFileContent]);
+
+  useEffect(() => {
+    // Listen for real-time updates from other clients
+    socket.on("code:update", ({ path, content }) => {
+      if (path === selectedFile && editorInstanceRef.current) {
+        // Update the content if the current content is different
+        if (editorInstanceRef.current.getValue() !== content) {
+          editorInstanceRef.current.setValue(content);
+          setCode(content);
+        }
+      }
+    });
+
+    return () => {
+      socket.off("code:update");
+    };
+  }, [selectedFile, setCode]);
 
   useEffect(() => {
     if (code && !isSaved) {
@@ -69,7 +105,7 @@ const Editor = () => {
 
   return (
     <div style={{ height: "60vh", border: "1px solid #ccc" }}>
-      <textarea ref={textAreaRef} style={{border: "1px solid red"}}></textarea>
+      <textarea ref={textAreaRef} style={{ border: "1px solid red" }}></textarea>
     </div>
   );
 };

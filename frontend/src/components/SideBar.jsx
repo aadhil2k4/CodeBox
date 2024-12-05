@@ -65,15 +65,19 @@ const SideBar = () => {
   const classes = useStyles();
   const clients = useContext(clientContext);
   const { selectedFile, setSelectedFile } = useContext(filesContext);
-  const {code, setCode} = useContext(codeContext);
+  const { code, setCode } = useContext(codeContext);
 
   const [fileTree, setFileTree] = useState({});
-  const {selectedFileContent, setSelectedFileContent} = useContext(selectedFileContentContext);
+  const { selectedFileContent, setSelectedFileContent } = useContext(selectedFileContentContext);
 
   const getFileTree = async () => {
-    const response = await fetch("http://localhost:9000/files");
-    const result = await response.json();
-    setFileTree(result.tree);
+    try {
+      const response = await fetch("http://localhost:9000/files");
+      const result = await response.json();
+      setFileTree(result.tree);
+    } catch (error) {
+      console.error("Error fetching file tree:", error);
+    }
   };
 
   const getFileContents = useCallback(async () => {
@@ -88,13 +92,12 @@ const SideBar = () => {
       console.error("Error fetching file contents:", error);
     }
   }, [selectedFile, setSelectedFileContent]);
-  
 
-  useEffect(()=>{
-    if(selectedFile && selectedFileContent){
+  useEffect(() => {
+    if (selectedFile && selectedFileContent) {
       setCode(selectedFileContent);
     }
-  },[selectedFile, selectedFileContent, setCode])
+  }, [selectedFile, selectedFileContent, setCode]);
 
   useEffect(() => {
     if (selectedFile) getFileContents();
@@ -109,6 +112,13 @@ const SideBar = () => {
   }, [getFileTree]);
 
   const [activeLink, setActiveLink] = useState("Members");
+
+  const handleLinkClick = (link) => {
+    setActiveLink(link);
+    if (link === "Files") {
+      getFileTree(); // Refresh the file tree when Files section is clicked
+    }
+  };
 
   const renderContent = () => {
     switch (activeLink) {
@@ -133,60 +143,63 @@ const SideBar = () => {
     <div className={classes.root}>
       {/* Sidebar */}
       <Box className={classes.drawerWrapper}>
-      <Drawer
-        className={classes.drawer}
-        variant="permanent"
-        anchor="left"
-        classes={{ paper: classes.drawerPaper }}
-      >
-        <Box
-          sx={{
-            margin: "16px auto",
-            textAlign: "center",
-            border: "2px solid",
-            display: "inline-block",
-            padding: "4px 8px",
-            color: "white",
-          }}
+        <Drawer
+          className={classes.drawer}
+          variant="permanent"
+          anchor="left"
+          classes={{ paper: classes.drawerPaper }}
         >
-          <Typography variant="h6">CodeBox</Typography>
-        </Box>
-        <Box
-          sx={{
-            borderBottom: "1px solid white",
-            margin: "4px 0",
-          }}
-        ></Box>
-        <Box className={classes.linksContainer}>
-          {[{text:"Members",icon:<PeopleOutlineOutlinedIcon />},
-          {text:"Files",icon:<FolderOutlinedIcon />},
-          {text:"Chat",icon:<ChatBubbleOutlineOutlinedIcon />}].map(({text,icon}) => (
-            <Button
-              key={text}
-              onClick={() => setActiveLink(text)}
-              sx={{
-                color: activeLink === text ? "#3DED97" : "white",
-                fontWeight: activeLink === text ? "bold" : "normal",
-                textDecoration: activeLink === text ? "bold" : "none",
-                "&:hover": {
-                  color: "#3DED97",
-                },
-              }}
-            >
-              {text}{icon}
+          <Box
+            sx={{
+              margin: "16px auto",
+              textAlign: "center",
+              border: "2px solid",
+              display: "inline-block",
+              padding: "4px 8px",
+              color: "white",
+            }}
+          >
+            <Typography variant="h6">CodeBox</Typography>
+          </Box>
+          <Box
+            sx={{
+              borderBottom: "1px solid white",
+              margin: "4px 0",
+            }}
+          ></Box>
+          <Box className={classes.linksContainer}>
+            {[
+              { text: "Members", icon: <PeopleOutlineOutlinedIcon /> },
+              { text: "Files", icon: <FolderOutlinedIcon /> },
+              { text: "Chat", icon: <ChatBubbleOutlineOutlinedIcon /> },
+            ].map(({ text, icon }) => (
+              <Button
+                key={text}
+                onClick={() => handleLinkClick(text)}
+                sx={{
+                  color: activeLink === text ? "#3DED97" : "white",
+                  fontWeight: activeLink === text ? "bold" : "normal",
+                  textDecoration: activeLink === text ? "bold" : "none",
+                  "&:hover": {
+                    color: "#3DED97",
+                  },
+                }}
+              >
+                {text}
+                {icon}
+              </Button>
+            ))}
+          </Box>
+          <Box className={classes.contentContainer}>{renderContent()}</Box>
+          <Box className={classes.footer}>
+            <Button variant="outline" sx={{ color: "white", backgroundColor: "green" }}>
+              Copy Id
             </Button>
-          ))}
-        </Box>
-        <Box className={classes.contentContainer}>{renderContent()}</Box>
-        <Box className={classes.footer}>
-          <Button variant="outline" sx={{ color: "white", backgroundColor: "green" }}>
-            Copy Id
-          </Button>
-          <Button variant="outline" sx={{ color: "white", backgroundColor: "red" }}>
-            Leave Room
-          </Button>
-        </Box>
-      </Drawer>
+            <Button variant="outline" sx={{ color: "white", backgroundColor: "red" }}>
+              Leave Room
+            </Button>
+          </Box>
+        </Drawer>
       </Box>
     </div>
   );
