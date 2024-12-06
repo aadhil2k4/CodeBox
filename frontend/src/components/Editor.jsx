@@ -11,7 +11,7 @@ import "codemirror/mode/htmlmixed/htmlmixed";
 import "codemirror/mode/xml/xml";
 import CodeMirror from "codemirror";
 import socket from "../socket";
-import { filesContext, selectedFileContentContext, codeContext } from "./EditorPage";
+import { filesContext, selectedFileContentContext, codeContext, roomIdContext } from "./EditorPage";
 import { debounce } from "lodash";
 
 const Editor = () => {
@@ -22,6 +22,7 @@ const Editor = () => {
   const { code, setCode } = useContext(codeContext);
 
   const selectedFileRef = useRef(selectedFile); // Store selectedFile in a ref
+  const roomId = useContext(roomIdContext);
 
   useEffect(() => {
     selectedFileRef.current = selectedFile; // Update ref when selectedFile changes
@@ -33,6 +34,7 @@ const Editor = () => {
       socket.emit("code:update", {
         path: selectedFileRef.current,
         content: newCode,
+        roomId: roomId
       });
     }, 500)
   ).current;
@@ -112,6 +114,7 @@ const Editor = () => {
         socket.emit("file:change", {
           path: selectedFile,
           content: code,
+          roomId: roomId
         });
       }
     }, 2000);

@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { toast, Toaster } from 'react-hot-toast';
 import { Box, Typography, Button, Modal, TextField } from '@mui/material';
 import { v4 as uuidv4 } from 'uuid';
+import socket from '../socket'
 
 const UserDash = () => {
   const [open, setOpen] = useState(false);
@@ -39,6 +40,7 @@ const UserDash = () => {
       toast.error('Please enter a room name and generate a room ID');
       return;
     }
+    socket.emit('room:join', {roomId, username: loggedInUser})
     navigate(`/editor/${roomId}`, { state: { roomName, roomId } });
     toast.success("Room is created")
   };

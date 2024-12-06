@@ -3,10 +3,28 @@ const fs = require('fs/promises');
 const { generateFileTree } = require('../Utils/fileUtils');
 const pty = require('node-pty');
 const os = require('os');
+const path = require('path')
 
 module.exports = (io) => {
+
+    const roomPath = new Map();
+
     io.on('connection', async (socket) => {
         console.log(`Socket connected: ${socket.id}`);
+
+        socket.on('room:join', async({roomId, username})=>{
+            if(!roomId || !username){
+                console.log('No roomId/username');
+            }
+            socket.join(roomId);
+            roomPath.set(roomId, path.resolve('./user'))
+            console.log(`User ${username} joined room: ${roomId}`)
+
+            io.to(roomId).emit('room:notification', {
+                meassage: `${username} has joined the room`,
+                users: Array.from(io.sockets.adapter.rooms.get(roomId) || [])
+            })
+        })
 
         // Emit initial file tree to the newly connected client
         try {
@@ -35,24 +53,24 @@ module.exports = (io) => {
         });
 
         // Handle real-time code updates
-        socket.on('code:update', ({ path, content }) => {
+        socket.on('code:update', ({ path, content, roomId }) => {
             console.log(`Received code update for path: ${path}`);
             if (path && content) {
                 console.log(`Code updated in file: ${path}`);
                 // Emit to all clients (including the sender) to ensure real-time updates everywhere
-                io.emit('code:update', { path, content });
+                io.to(roomId).emit('code:update', { path, content });
             }
         });
         
 
         // Handle file changes
-        socket.on('file:change', async ({ path, content }) => {
+        socket.on('file:change', async ({ path, content, roomId }) => {
             if (path && content) {
                 try {
                     console.log(`File change detected: ${path}`);
                     await fs.writeFile(`./user${path}`, content);
                     const updatedFileTree = await generateFileTree('./user');
-                    io.emit('file:refresh', updatedFileTree); // Broadcast updated file tree to all clients
+                    io.to(roomId).emit('file:refresh', updatedFileTree); // Broadcast updated file tree to all clients
                 } catch (error) {
                     console.error('Error writing file:', error);
                 }
@@ -71,8 +89,14 @@ module.exports = (io) => {
         if (event === 'add' || event === 'change' || event === 'unlink') {
             try {
                 const fileTree = await generateFileTree('./user');
-                io.emit('file:refresh', fileTree);
-                console.log(`File tree updated due to ${event} at ${path}`);
+                console.log(`File Tree updated due to ${event} at ${path}`)
+                for (const [roomId, roomBasePath] of roomPath.entries()) {
+                    // Check if the changed file is within this room's base path
+                    if (path.startsWith(roomBasePath)) {
+                        io.to(roomId).emit('file:refresh', fileTree);
+                        console.log(`File Tree updated for room ${roomId} due to ${event} at ${filePath}`);
+                    }
+                }
             } catch (error) {
                 console.error('Error watching file system:', error);
             }

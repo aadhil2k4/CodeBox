@@ -3,6 +3,7 @@ import React, { useState,createContext } from 'react'
 import SideBar from './SideBar'
 import Editor from './Editor'
 import Terminal from './terminal'
+import { useParams } from 'react-router-dom'
 
 const useStyles = makeStyles({
     root: {
@@ -32,6 +33,7 @@ export const clientContext = createContext();
 export const filesContext = createContext();
 export const selectedFileContentContext = createContext();
 export const codeContext = createContext();
+export const roomIdContext = createContext();
 
 const EditorPage = () => {
     const classes = useStyles();
@@ -46,10 +48,11 @@ const EditorPage = () => {
     const [selectedFileContent, setSelectedFileContent] = useState("");
     const [code, setCode] = useState('')
 
-
+    const { roomId } = useParams();
 
     return (
         <div className={classes.root}>
+          <roomIdContext.Provider value={roomId}>
             <codeContext.Provider value={{code,setCode}}>
             <selectedFileContentContext.Provider value={{selectedFileContent,setSelectedFileContent}}>
             <clientContext.Provider value={clients}>
@@ -68,6 +71,7 @@ const EditorPage = () => {
             </clientContext.Provider>
             </selectedFileContentContext.Provider>
             </codeContext.Provider>
+            </roomIdContext.Provider>
         </div>
     )
 }
