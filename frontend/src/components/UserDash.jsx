@@ -40,7 +40,7 @@ const UserDash = () => {
       toast.error('Please enter a room name and generate a room ID');
       return;
     }
-    socket.emit('room:join', {roomId, username: loggedInUser})
+    socket.emit('room:join', {roomId, username: loggedInUser,projectName: roomName})
     navigate(`/editor/${roomId}`, { state: { roomName, roomId } });
     toast.success("Room is created")
   };

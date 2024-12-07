@@ -1,55 +1,81 @@
 const chokidar = require('chokidar');
 const fs = require('fs/promises');
+const { existsSync, mkdirSync } = require('fs');
 const { generateFileTree } = require('../Utils/fileUtils');
 const pty = require('node-pty');
 const os = require('os');
-const path = require('path')
+const path = require('path');
 
 module.exports = (io) => {
-
-    const roomPath = new Map();
+    const roomDirectories = new Map(); // Maps roomId to an array of directories
 
     io.on('connection', async (socket) => {
         console.log(`Socket connected: ${socket.id}`);
 
-        socket.on('room:join', async({roomId, username})=>{
-            if(!roomId || !username){
-                console.log('No roomId/username');
+        socket.on('room:join', async ({ roomId, username, projectName }) => {
+            if (!roomId || !username || !projectName) {
+                console.log(`Missing ${roomId}, ${username}, or ${projectName}`);
+                return;
             }
+
+            const projectPath = path.resolve(__dirname, '../projects', projectName); // Store projects in a dedicated folder
+            if (!existsSync(projectPath)) {
+                mkdirSync(projectPath, { recursive: true }); // Create the project directory if it doesn't exist
+                console.log(`Project directory created: ${projectPath}`);
+            }
+
             socket.join(roomId);
-            roomPath.set(roomId, path.resolve('./user'))
-            console.log(`User ${username} joined room: ${roomId}`)
 
+            if (!roomDirectories.has(roomId)) {
+                roomDirectories.set(roomId, new Set());
+            }
+            roomDirectories.get(roomId).add(projectPath);
+
+            console.log(`User ${username} joined room ${roomId} with project ${projectName}`);
+
+            // Notify all users in the room
             io.to(roomId).emit('room:notification', {
-                meassage: `${username} has joined the room`,
-                users: Array.from(io.sockets.adapter.rooms.get(roomId) || [])
-            })
-        })
+                message: `${username} has joined the room`,
+                users: Array.from(io.sockets.adapter.rooms.get(roomId) || []),
+            });
 
-        // Emit initial file tree to the newly connected client
-        try {
-            const initialFileTree = await generateFileTree('./user');
-            socket.emit('file:refresh', initialFileTree);
-        } catch (error) {
-            console.error('Error generating initial file tree:', error);
-        }
+            // Emit the initial file tree for this user's project directory
+            try {
+                const initialFileTree = await generateFileTree(projectPath);
+                socket.emit('file:refresh', initialFileTree);
+            } catch (error) {
+                console.error('Error generating initial file tree:', error);
+            }
 
-        const shell = os.platform() === 'win32' ? 'cmd.exe' : 'bash';
+            // Start a terminal in the project folder
+            const shell = os.platform() === 'win32' ? 'cmd.exe' : 'bash';
 
-        const socketPty = pty.spawn(shell, [], {
-            name: 'xtern-color',
-            cols: 80,
-            rows: 30,
-            cwd: process.env.INIT_CWD + "/user",
-            env: process.env,
-        });
+            const socketPty = pty.spawn(shell, [], {
+                name: 'xterm-color',
+                cols: 80,
+                rows: 30,
+                cwd: projectPath, // Set terminal's working directory to the project folder
+                env: process.env,
+            });
 
-        socketPty.onData((data) => {
-            socket.emit('terminal:data', data);
-        });
+            socketPty.onData((data) => {
+                socket.emit('terminal:data', data);
+            });
 
-        socket.on('terminal:write', (data) => {
-            socketPty.write(data);
+            socket.on('terminal:write', (data) => {
+                socketPty.write(data);
+            });
+
+            // Handle terminal resizing
+            socket.on('terminal:resize', ({ cols, rows }) => {
+                socketPty.resize(cols, rows);
+            });
+
+            // Handle client disconnection
+            socket.on('disconnect', () => {
+                console.log(`Socket disconnected: ${socket.id}`);
+                socketPty.kill();
+            });
         });
 
         // Handle real-time code updates
@@ -57,44 +83,40 @@ module.exports = (io) => {
             console.log(`Received code update for path: ${path}`);
             if (path && content) {
                 console.log(`Code updated in file: ${path}`);
-                // Emit to all clients (including the sender) to ensure real-time updates everywhere
-                io.to(roomId).emit('code:update', { path, content });
+                io.to(roomId).emit('code:update', { path, content }); // Emit to all clients in the room
             }
         });
-        
 
         // Handle file changes
         socket.on('file:change', async ({ path, content, roomId }) => {
             if (path && content) {
                 try {
                     console.log(`File change detected: ${path}`);
-                    await fs.writeFile(`./user${path}`, content);
-                    const updatedFileTree = await generateFileTree('./user');
-                    io.to(roomId).emit('file:refresh', updatedFileTree); // Broadcast updated file tree to all clients
+                    await fs.writeFile(path, content);
+
+                    const roomPaths = Array.from(roomDirectories.get(roomId) || []);
+                    for (const directory of roomPaths) {
+                        const updatedFileTree = await generateFileTree(directory);
+                        io.to(roomId).emit('file:refresh', updatedFileTree);
+                    }
                 } catch (error) {
                     console.error('Error writing file:', error);
                 }
             }
         });
-
-        // Handle client disconnection
-        socket.on('disconnect', () => {
-            console.log(`Socket disconnected: ${socket.id}`);
-            socketPty.kill();
-        });
     });
 
-    // Watch for changes in the user directory
-    chokidar.watch('./user').on('all', async (event, path) => {
-        if (event === 'add' || event === 'change' || event === 'unlink') {
+    // Watch for changes in all project directories
+    chokidar.watch(path.resolve(__dirname, '../projects')).on('all', async (event, filePath) => {
+        if (['add', 'change', 'unlink'].includes(event)) {
             try {
-                const fileTree = await generateFileTree('./user');
-                console.log(`File Tree updated due to ${event} at ${path}`)
-                for (const [roomId, roomBasePath] of roomPath.entries()) {
-                    // Check if the changed file is within this room's base path
-                    if (path.startsWith(roomBasePath)) {
-                        io.to(roomId).emit('file:refresh', fileTree);
-                        console.log(`File Tree updated for room ${roomId} due to ${event} at ${filePath}`);
+                for (const [roomId, directories] of roomDirectories.entries()) {
+                    for (const directory of directories) {
+                        if (filePath.startsWith(directory)) {
+                            const fileTree = await generateFileTree(directory);
+                            io.to(roomId).emit('file:refresh', fileTree);
+                            console.log(`File tree updated for room ${roomId} due to ${event} at ${filePath}`);
+                        }
                     }
                 }
             } catch (error) {
