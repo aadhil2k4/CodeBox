@@ -3,7 +3,7 @@ import { Drawer, Typography, Box, Button } from "@mui/material";
 import socket from "../socket";
 import { makeStyles } from "@mui/styles";
 import Members from "./Members";
-import { clientContext, filesContext, selectedFileContentContext, codeContext} from "./EditorPage";
+import { clientContext, filesContext, selectedFileContentContext, codeContext } from "./EditorPage";
 import FileTree from "./FileTree";
 import PeopleOutlineOutlinedIcon from '@mui/icons-material/PeopleOutlineOutlined';
 import FolderOutlinedIcon from '@mui/icons-material/FolderOutlined';
@@ -12,14 +12,14 @@ import ChatBubbleOutlineOutlinedIcon from '@mui/icons-material/ChatBubbleOutline
 const drawerWidth = 300;
 
 const useStyles = makeStyles({
-  drawerWrapper:{
+  drawerWrapper: {
     height: "calc(100vh - 16px)",
     backgroundColor: "black"
   },
   drawer: {
     width: drawerWidth,
     flexShrink: 0,
-    backgroundColor:"black",
+    backgroundColor: "black",
     height: "calc(100vh - 16px)"
   },
   drawerPaper: {
@@ -28,11 +28,6 @@ const useStyles = makeStyles({
     color: "white",
     display: "flex",
     flexDirection: "column",
-    //borderRadius: "15px",
-    //marginTop: "10px",
-    //marginLeft: "1rem",
-    //marginBottom:"8px",
-    //height: "calc(100vh - 16px)",
   },
   root: {
     display: "flex",
@@ -69,14 +64,30 @@ const SideBar = () => {
 
   const [fileTree, setFileTree] = useState({});
   const { selectedFileContent, setSelectedFileContent } = useContext(selectedFileContentContext);
+  const projectName = localStorage.getItem('currentProjectName') || 'defaultProject';
 
   const getFileTree = async () => {
     try {
-      const response = await fetch("http://localhost:9000/files");
+      const response = await fetch(`http://localhost:9000/files?projectName=${projectName}`);
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error(`Error fetching file tree: 
+          Status: ${response.status} 
+          Status Text: ${response.statusText}
+          Response: ${errorText}`);
+        
+        alert(`Failed to load file tree. 
+          Status: ${response.status}. 
+          Please check server configuration.`);
+        return;
+      }
+      
       const result = await response.json();
       setFileTree(result.tree);
     } catch (error) {
-      console.error("Error fetching file tree:", error);
+      console.error("Network or parsing error:", error);
+      alert("Network error or invalid response from server.");
     }
   };
 
@@ -84,14 +95,15 @@ const SideBar = () => {
     if (!selectedFile) return;
     try {
       const response = await fetch(
-        `http://localhost:9000/files/content?path=${selectedFile}`
+        `http://localhost:9000/files/content?path=${encodeURIComponent(`${projectName}/${selectedFile}`)}`
       );
+      
       const result = await response.json();
       setSelectedFileContent(result.content);
     } catch (error) {
       console.error("Error fetching file contents:", error);
     }
-  }, [selectedFile, setSelectedFileContent]);
+  }, [selectedFile, projectName, setSelectedFileContent]);
 
   useEffect(() => {
     if (selectedFile && selectedFileContent) {

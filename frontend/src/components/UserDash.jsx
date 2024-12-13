@@ -41,6 +41,7 @@ const UserDash = () => {
       return;
     }
     socket.emit('room:join', {roomId, username: loggedInUser,projectName: roomName})
+    localStorage.setItem('currentProjectName', roomName);
     navigate(`/editor/${roomId}`, { state: { roomName, roomId } });
     toast.success("Room is created")
   };
